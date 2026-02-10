@@ -11,7 +11,6 @@ const NAV_LINKS = [
   { name: "What We Do", href: "#what-we-do" },
   { name: "How It Works", href: "#how-it-works" },
   { name: "Agentic Commerce", href: "#solution" },
-  { name: "People", href: "#team" },
 ];
 
 export default function Navbar() {
