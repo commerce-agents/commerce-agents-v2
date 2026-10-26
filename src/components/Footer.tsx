@@ -1,91 +1,25 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { ArrowUpRight } from "lucide-react";
-
-// Independent randomly-drifting organic gradient blob
-function RandomDriftBlob({
-  baseX,
-  baseY,
-  width,
-  height,
-  gradient,
-  blur,
-  opacity,
-  speed,
-}: {
-  baseX: number;
-  baseY: number;
-  width: number;
-  height: number;
-  gradient: string;
-  blur: number;
-  opacity: number;
-  speed: number;
-}) {
-  const blobRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!blobRef.current) return;
-    const el = blobRef.current;
-    let currentX = baseX;
-    let currentY = baseY;
-    let targetX = baseX + (Math.random() - 0.5) * 20;
-    let targetY = baseY + (Math.random() - 0.5) * 15;
-    let raf: number;
-
-    const pickNewTarget = () => {
-      targetX = baseX + (Math.random() - 0.5) * 35;
-      targetY = baseY + (Math.random() - 0.5) * 25;
-      setTimeout(pickNewTarget, 2000 + Math.random() * 2500);
-    };
-    pickNewTarget();
-
-    const loop = () => {
-      currentX += (targetX - currentX) * speed;
-      currentY += (targetY - currentY) * speed;
-      el.style.left = `${currentX}%`;
-      el.style.top = `${currentY}%`;
-      raf = requestAnimationFrame(loop);
-    };
-    loop();
-
-    return () => cancelAnimationFrame(raf);
-  }, [baseX, baseY, speed]);
-
-  return (
-    <div
-      ref={blobRef}
-      className="pointer-events-none"
-      style={{
-        position: "absolute",
-        width,
-        height,
-        borderRadius: "50%",
-        background: gradient,
-        filter: `blur(${blur}px)`,
-        opacity,
-        transform: "translate(-50%, -50%)",
-        willChange: "left, top",
-      }}
-    />
-  );
-}
 
 export default function Footer() {
   return (
     <footer
       id="contacts"
-      className="relative bg-[#060509] pt-24 pb-8 overflow-hidden border-t border-white/[0.08]"
-      style={{
-        backgroundImage: "url('/images/footer-bg.webp')",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "50% 100%",
-        backgroundSize: "140% auto",
-      }}
+      className="relative bg-[#09080A] pt-28 pb-10 overflow-hidden"
     >
+      {/* ── Natural Seamless Volumetric Glow across entire bottom (No Box / No Border) ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 120% 70% at 50% 100%, rgba(115, 34, 242, 0.55) 0%, rgba(151, 128, 255, 0.25) 35%, rgba(9, 8, 10, 0) 75%)",
+        }}
+      />
+
       {/* ── TOP SECTION: Direct Inquiries & Sprint Commission ────────────────── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12 lg:gap-24 mb-24">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12 lg:gap-24 mb-28">
         {/* Left: Email in one single clean line with generous breathing room */}
         <div className="min-w-0 flex-1">
           <p className="font-mono text-xs uppercase tracking-widest text-[#9780FF] mb-4">
@@ -95,7 +29,7 @@ export default function Footer() {
             href="mailto:hello.commerceagents@gmail.com"
             className="inline-block font-light text-white tracking-tight leading-none hover:text-[#9780FF] transition-colors duration-300"
             style={{
-              fontSize: "clamp(20px, 2.6vw, 42px)",
+              fontSize: "clamp(20px, 2.5vw, 40px)",
               whiteSpace: "nowrap",
             }}
           >
@@ -121,72 +55,29 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── FULL-BLEED BOTTOM HORIZON GRADIENT & ANIMATED RANDOM BLOBS ─────── */}
-      <div className="relative w-full overflow-hidden pt-12">
-        {/* Layered natural gradient bloom along the entire bottom edge */}
-        <div
-          className="absolute inset-x-0 bottom-0 pointer-events-none"
+      {/* ── Brand Wordmark: Reduced Size, Letter Spaced, Separated Words ─────── */}
+      <div className="relative z-10 w-full px-6 text-center select-none pb-12">
+        <h2
+          className="font-light text-white uppercase leading-none drop-shadow-[0_15px_35px_rgba(0,0,0,0.8)]"
           style={{
-            height: 380,
-            background: "radial-gradient(ellipse 130% 90% at 50% 100%, rgba(115, 34, 242, 0.7) 0%, rgba(151, 128, 255, 0.45) 30%, rgba(255, 116, 16, 0.2) 60%, transparent 100%)",
+            fontSize: "clamp(26px, 6.2vw, 96px)",
+            letterSpacing: "0.16em",
+            whiteSpace: "nowrap",
           }}
-        />
+        >
+          COMMERCE AGENTS
+        </h2>
+      </div>
 
-        {/* 3 Independently animated random-drift blobs floating organically */}
-        <RandomDriftBlob
-          baseX={50}
-          baseY={75}
-          width={800}
-          height={380}
-          gradient="radial-gradient(ellipse, #7322F2 0%, #4F46E5 50%, transparent 80%)"
-          blur={85}
-          opacity={0.8}
-          speed={0.008}
-        />
-        <RandomDriftBlob
-          baseX={32}
-          baseY={65}
-          width={520}
-          height={320}
-          gradient="radial-gradient(ellipse, #9780FF 0%, #7C3AED 55%, transparent 80%)"
-          blur={70}
-          opacity={0.7}
-          speed={0.012}
-        />
-        <RandomDriftBlob
-          baseX={68}
-          baseY={70}
-          width={450}
-          height={280}
-          gradient="radial-gradient(ellipse, #FF7410 0%, #EA580C 45%, transparent 75%)"
-          blur={65}
-          opacity={0.45}
-          speed={0.01}
-        />
-
-        {/* Single-line Wordmark naturally centered over the bottom volumetric gradient */}
-        <div className="relative z-10 w-full px-4 text-center select-none pb-6">
-          <h2
-            className="font-bold tracking-tighter text-white uppercase leading-none drop-shadow-[0_15px_40px_rgba(0,0,0,0.7)]"
-            style={{
-              fontSize: "clamp(34px, 11vw, 175px)",
-              whiteSpace: "nowrap",
-            }}
-          >
-            COMMERCE AGENTS
-          </h2>
+      {/* ── FOOTER DOWN INFO: Copyright & Policy Links ────────────────────────── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-16 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-500">
+        <div className="flex items-center gap-3">
+          <span>© 2026 COMMERCE AGENTS STUDIO. ALL RIGHTS RESERVED.</span>
         </div>
-
-        {/* ── FOOTER DOWN INFO: Copyright & Policy Links ────────────────────────── */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-16 pt-6 pb-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-400 border-t border-white/[0.08]">
-          <div className="flex items-center gap-3">
-            <span>© 2026 COMMERCE AGENTS STUDIO. ALL RIGHTS RESERVED.</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-white transition-colors cursor-pointer">PRIVACY POLICY</span>
-            <span className="text-zinc-600">|</span>
-            <span className="hover:text-white transition-colors cursor-pointer">TERMS OF SERVICE</span>
-          </div>
+        <div className="flex items-center gap-6">
+          <span className="hover:text-white transition-colors cursor-pointer">PRIVACY POLICY</span>
+          <span className="text-zinc-700">|</span>
+          <span className="hover:text-white transition-colors cursor-pointer">TERMS OF SERVICE</span>
         </div>
       </div>
     </footer>
