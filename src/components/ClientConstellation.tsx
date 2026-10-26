@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Sparkles, ArrowUpRight, Activity, ExternalLink } from "lucide-react";
+import { Sparkles, Activity, ExternalLink } from "lucide-react";
 
 interface ClientProject {
   id: string;
@@ -10,6 +10,7 @@ interface ClientProject {
   category: string;
   metric: string;
   logo: string;
+  logoType?: "square" | "wide";
   description: string;
   tag: string;
   gradient: string;
@@ -22,6 +23,7 @@ const clients: ClientProject[] = [
     category: "ENTERPRISE EV BATTERY INTELLIGENCE",
     metric: "3-TIER HEALTH TRIAGE",
     logo: "/clients/irasus.png",
+    logoType: "wide",
     description:
       "Enterprise IoT telemetry dashboard for electric vehicle battery packs. Real-time CAN bus telemetry, thermal runaway early warning detection, and automated fleet warranty monitoring.",
     tag: "HARDWARE TELEMETRY",
@@ -32,7 +34,8 @@ const clients: ClientProject[] = [
     name: "We Two Pets",
     category: "0→1 D2C PET COMMERCE",
     metric: "ZERO-TO-ONE ARCHITECTURE",
-    logo: "/clients/wetwopets-norm.webp",
+    logo: "/clients/wetwopets.png",
+    logoType: "wide",
     description:
       "Curated premium pet nutrition commerce platform. Built with intelligent breed/weight matching algorithms, automated recurring subscriptions, and seamless zero-latency cart checkout.",
     tag: "D2C COMMERCE",
@@ -43,7 +46,8 @@ const clients: ClientProject[] = [
     name: "Makeon STEM",
     category: "MODULAR HARDWARE E-STORE",
     metric: "1,200+ PACKS SHIPPED",
-    logo: "/clients/makeon-norm.webp",
+    logo: "/clients/makeon.png",
+    logoType: "square",
     description:
       "E-commerce storefront and interactive project build loops for adhesive, wearable electronics and STEM circuit components shipped worldwide.",
     tag: "HARDWARE RETAIL",
@@ -55,6 +59,7 @@ const clients: ClientProject[] = [
     category: "0→1 FOOD DELIVERY PWA & BOT",
     metric: "SUB-SECOND KITCHEN SYNC",
     logo: "/clients/vidyas-kitchen.png",
+    logoType: "square",
     description:
       "Hyperlocal food ordering PWA paired with an automated WhatsApp dispatch bot and live kitchen order management board, eliminating food aggregator commission overhead.",
     tag: "FOOD ENGINE PWA",
@@ -92,7 +97,7 @@ export default function ClientConstellation() {
           </div>
         </div>
 
-        {/* 4 Client Cards Grid with Full-Color Real Logos */}
+        {/* 4 Client Cards Grid with Real Logos */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {clients.map((client) => {
             const isHovered = hoveredClient === client.id;
@@ -132,17 +137,29 @@ export default function ClientConstellation() {
                   </span>
                 </div>
 
-                {/* Real Full-Color Client Logo (High Visibility) */}
-                <div className="relative h-24 w-full flex items-center justify-start mb-6 p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-                  <div className="relative w-56 h-16 transition-transform duration-300 group-hover:scale-105">
-                    <Image
-                      src={client.logo}
-                      alt={client.name}
-                      fill
-                      className="object-contain object-left drop-shadow-md"
-                      priority
-                    />
-                  </div>
+                {/* Real Full-Color Client Logo Container */}
+                <div className="relative h-28 w-full flex items-center justify-start mb-6 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
+                  {client.logoType === "square" ? (
+                    <div className="relative w-20 h-20 transition-transform duration-300 group-hover:scale-105 rounded-xl overflow-hidden shadow-lg">
+                      <Image
+                        src={client.logo}
+                        alt={client.name}
+                        fill
+                        className="object-contain object-left"
+                        priority
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative w-56 h-16 transition-transform duration-300 group-hover:scale-105 rounded-lg overflow-hidden">
+                      <Image
+                        src={client.logo}
+                        alt={client.name}
+                        fill
+                        className="object-contain object-left drop-shadow-md"
+                        priority
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Client Name & Metric */}
