@@ -25,8 +25,16 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
 
   const mousePosRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
 
+  // Guard ref so intro animation strictly runs ONCE and never repeats
+  const hasRunIntroRef = useRef(false);
+  const onIntroCompleteRef = useRef(onIntroComplete);
+  onIntroCompleteRef.current = onIntroComplete;
+
   // ─── 1. Cinematic Intro: Center Blur-to-Clear → Move Up → Reveal Contents ──
   useEffect(() => {
+    if (hasRunIntroRef.current) return;
+    hasRunIntroRef.current = true;
+
     const title = titleRef.current;
     const surrounding = surroundingRef.current;
     const eyebrow = eyebrowRef.current;
@@ -87,7 +95,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
           stagger: 0.08,
           ease: "power2.out",
           onComplete: () => {
-            onIntroComplete?.();
+            onIntroCompleteRef.current?.();
           },
         },
         "-=0.6"
@@ -96,7 +104,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     return () => {
       tl.kill();
     };
-  }, [onIntroComplete]);
+  }, []);
 
   // ─── 2. Interactive White Star Particles Canvas ────────────────────────────
   useEffect(() => {
