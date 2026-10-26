@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
 export default function Navbar({ isVisible = true }: { isVisible?: boolean }) {
@@ -50,19 +51,24 @@ export default function Navbar({ isVisible = true }: { isVisible?: boolean }) {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out py-4 px-4 sm:px-8 md:px-12 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6 pointer-events-none"
         } ${
-          scrolled ? "bg-[#09080A]/80 backdrop-blur-xl border-b border-white/5 py-3" : ""
+          scrolled ? "bg-[#09080A]/85 backdrop-blur-xl border-b border-white/5 py-3" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Brand Logo */}
+          {/* Brand Logo with Authentic Geometric Mark */}
           <Link
             href="/"
-            className="group flex items-center gap-3 text-sm tracking-wider font-semibold"
+            className="group flex items-center gap-3.5 text-sm tracking-wider font-semibold"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#9780FF] via-[#FF7410] to-[#00F0FF] p-[1px] transition-transform duration-300 group-hover:scale-105">
-              <div className="w-full h-full bg-[#09080A] rounded-[7px] flex items-center justify-center font-mono text-[11px] font-bold text-white">
-                CA
-              </div>
+            <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-[#9780FF]/25 via-white/5 to-[#FF7410]/25 p-[1px] border border-white/10 transition-all duration-300 group-hover:scale-105 group-hover:border-[#9780FF]/50 shadow-[0_0_20px_rgba(151,128,255,0.2)] flex items-center justify-center overflow-hidden">
+              <Image
+                src="/commerce-agents-logo.png"
+                alt="Commerce Agents Mark"
+                width={24}
+                height={24}
+                className="object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] group-hover:scale-110 transition-transform duration-300"
+                priority
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-bold tracking-tight text-white group-hover:text-[#9780FF] transition-colors">
