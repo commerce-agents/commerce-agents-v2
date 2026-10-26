@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Message recorded and transmitted successfully to santhoshdesignstudio@gmail.com",
+      message: "Message recorded and transmitted successfully to hello.commerceagents@gmail.com",
       entry: newEntry,
     });
   } catch (error) {

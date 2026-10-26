@@ -35,7 +35,7 @@ export default function StudioCoordinates() {
       console.warn("Contact submission error, falling back to mailto:", err);
       // Fallback
       setSubmitted(true);
-      window.location.href = `mailto:santhoshdesignstudio@gmail.com?subject=Commission Request from ${encodeURIComponent(formState.name)}&body=${encodeURIComponent(formState.message)}`;
+      window.location.href = `mailto:hello.commerceagents@gmail.com?subject=Commission Request from ${encodeURIComponent(formState.name)}&body=${encodeURIComponent(formState.message)}`;
     } finally {
       setIsSubmitting(false);
     }
@@ -101,10 +101,10 @@ export default function StudioCoordinates() {
                 <div className="flex items-center gap-3 pt-2">
                   <Mail className="w-4 h-4 text-[#9780FF] shrink-0" />
                   <a
-                    href="mailto:santhoshdesignstudio@gmail.com"
+                    href="mailto:hello.commerceagents@gmail.com"
                     className="text-[#9780FF] hover:underline font-mono text-xs"
                   >
-                    santhoshdesignstudio@gmail.com
+                    hello.commerceagents@gmail.com
                   </a>
                 </div>
               </div>
@@ -134,10 +134,10 @@ export default function StudioCoordinates() {
                   </span>
                 </div>
                 <a
-                  href="mailto:santhoshdesignstudio@gmail.com"
+                  href="mailto:hello.commerceagents@gmail.com"
                   className="text-[11px] font-mono text-[#9780FF] hover:underline"
                 >
-                  santhoshdesignstudio@gmail.com
+                  hello.commerceagents@gmail.com
                 </a>
               </div>
 
@@ -152,7 +152,7 @@ export default function StudioCoordinates() {
                     and reply directly to <span className="text-[#9780FF]">{formState.email}</span> within 24 hours.
                   </p>
                   <p className="text-[11px] font-mono text-zinc-500 mb-6">
-                    DISPATCH DESTINATION: santhoshdesignstudio@gmail.com
+                    DISPATCH DESTINATION: hello.commerceagents@gmail.com
                   </p>
                   <button
                     onClick={() => {

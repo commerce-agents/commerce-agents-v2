@@ -3,62 +3,74 @@
 import React, { useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 
-// Each blob has its own random animation path
-function AnimatedBlob({ className, style }: { className?: string; style?: React.CSSProperties }) {
+// One blob that drifts randomly forever
+function DriftBlob({ initX, initY, color, size, blur, opacity, speed }:
+  { initX: number; initY: number; color: string; size: number; blur: number; opacity: number; speed: number }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ref.current) return;
     const el = ref.current;
-
-    let x = 0, y = 0;
-    let tx = (Math.random() - 0.5) * 120;
-    let ty = (Math.random() - 0.5) * 80;
-    let vx = (Math.random() - 0.5) * 0.4;
-    let vy = (Math.random() - 0.5) * 0.4;
+    let cx = initX, cy = initY;
+    let tx = initX + (Math.random() - 0.5) * 140;
+    let ty = initY + (Math.random() - 0.5) * 100;
     let raf: number;
 
-    const speed = 0.008 + Math.random() * 0.012;
+    const changeTarget = () => {
+      tx = initX + (Math.random() - 0.5) * 180;
+      ty = initY + (Math.random() - 0.5) * 120;
+      setTimeout(changeTarget, 2500 + Math.random() * 3000);
+    };
+    changeTarget();
 
     const tick = () => {
-      tx += vx;
-      ty += vy;
-      // bounce softly within bounds
-      if (Math.abs(tx) > 120) vx *= -1;
-      if (Math.abs(ty) > 80) vy *= -1;
-
-      x += (tx - x) * speed;
-      y += (ty - y) * speed;
-
-      el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+      cx += (tx - cx) * speed;
+      cy += (ty - cy) * speed;
+      el.style.left = `${cx}%`;
+      el.style.top = `${cy}%`;
       raf = requestAnimationFrame(tick);
     };
     tick();
-
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  return <div ref={ref} className={className} style={{ position: "absolute", willChange: "transform", ...style }} />;
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: "absolute",
+        width: size,
+        height: size * 0.55,
+        borderRadius: "50%",
+        background: color,
+        filter: `blur(${blur}px)`,
+        opacity,
+        transform: "translate(-50%, -50%)",
+        mixBlendMode: "screen" as const,
+        willChange: "left, top",
+        pointerEvents: "none",
+      }}
+    />
+  );
 }
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#060509] pt-20 pb-10 px-6 sm:px-10 md:px-16 overflow-hidden border-t border-white/[0.06]">
+    <footer className="relative bg-[#060509] pt-20 overflow-hidden border-t border-white/[0.06]">
 
-      {/* ── TOP ROW: Email (left) + CTA (right) ───────────────────── */}
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-10 mb-16">
-        {/* Left */}
+      {/* ── TOP ROW ─────────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex flex-col md:flex-row items-start md:items-end justify-between gap-10 mb-16">
         <div>
-          <p className="font-light text-zinc-400 text-sm mb-3 tracking-wide">Let's Build Something Radical</p>
+          <p className="text-zinc-400 text-sm font-light mb-3">Let's Build Something Radical</p>
           <a
-            href="mailto:santhoshdesignstudio@gmail.com"
-            className="block text-3xl sm:text-5xl md:text-[56px] font-light text-white tracking-tight leading-none hover:text-[#9780FF] transition-colors duration-300 break-all"
+            href="mailto:hello.commerceagents@gmail.com"
+            className="block font-light text-white tracking-tight leading-none hover:text-[#9780FF] transition-colors duration-300 break-all"
+            style={{ fontSize: "clamp(22px, 3.8vw, 56px)" }}
           >
-            santhoshdesignstudio<span className="text-[#9780FF]">@</span>gmail.com
+            hello.commerceagents@gmail.com
           </a>
         </div>
 
-        {/* Right – CTA box */}
         <div className="shrink-0 flex flex-col items-start md:items-end">
           <h4 className="text-xl sm:text-2xl font-light text-white tracking-tight mb-1">
             Engineer Your Reality
@@ -76,68 +88,56 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── LINKS ROW: Portfolio + LinkedIn only ──────────────────── */}
-      <div className="max-w-7xl mx-auto border-b border-white/10 pb-8 mb-0">
+      {/* ── LINKS ROW ───────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 border-b border-white/10 pb-8">
         <div className="flex flex-wrap items-center justify-between gap-6 text-sm text-zinc-300 font-light">
-          <a href="https://designbysanthosh.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1.5">
-            Portfolio
-            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
+          <a href="https://designbysanthosh.com" target="_blank" rel="noopener noreferrer"
+            className="hover:text-white transition-colors flex items-center gap-1.5">
+            Portfolio <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
           </a>
-          <a href="https://linkedin.com/in/santhosh-a-designer" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+          <a href="https://linkedin.com/in/santhosh-a-designer" target="_blank" rel="noopener noreferrer"
+            className="hover:text-white transition-colors">
             LinkedIn
           </a>
-          <a href="mailto:santhoshdesignstudio@gmail.com" className="text-zinc-400 hover:text-white transition-colors">
-            santhoshdesignstudio@gmail.com
+          <a href="mailto:hello.commerceagents@gmail.com"
+            className="text-zinc-400 hover:text-white transition-colors">
+            hello.commerceagents@gmail.com
           </a>
           <span className="font-mono text-xs text-zinc-500">CHENNAI, INDIA // 13.0604° N</span>
         </div>
       </div>
 
-      {/* ── MASSIVE WORDMARK + VOLUMETRIC ANIMATED BLOBS ─────────── */}
-      <div className="relative max-w-7xl mx-auto mt-0 pt-12 pb-6 flex flex-col items-center overflow-hidden">
-        {/* Moving animated blobs – pure random drift */}
-        <AnimatedBlob
-          className="w-[55vw] max-w-[700px] h-[240px] rounded-full"
-          style={{
-            left: "50%", top: "55%",
-            background: "radial-gradient(ellipse at center, #7C3AED 0%, #4F46E5 45%, #1E1B4B 100%)",
-            filter: "blur(72px)",
-            opacity: 0.92,
-            mixBlendMode: "screen",
-          }}
-        />
-        <AnimatedBlob
-          className="w-[30vw] max-w-[360px] h-[180px] rounded-full"
-          style={{
-            left: "35%", top: "40%",
-            background: "radial-gradient(ellipse at center, #9780FF 0%, #6D28D9 60%, transparent 100%)",
-            filter: "blur(55px)",
-            opacity: 0.75,
-            mixBlendMode: "screen",
-          }}
-        />
-        <AnimatedBlob
-          className="w-[20vw] max-w-[260px] h-[140px] rounded-full"
-          style={{
-            left: "65%", top: "45%",
-            background: "radial-gradient(ellipse at center, #2563EB 0%, #1D4ED8 60%, transparent 100%)",
-            filter: "blur(50px)",
-            opacity: 0.6,
-            mixBlendMode: "screen",
-          }}
-        />
+      {/* ── WORDMARK + FULL-BLEED ANIMATED GRADIENT BLOBS ──────────── */}
+      {/* This div must NOT have overflow:hidden — blobs bleed to edges */}
+      <div
+        className="relative"
+        style={{ paddingTop: 56, paddingBottom: 0 }}
+      >
+        {/* Blobs live behind the text, positioned relative to this container */}
+        {/* They are positioned as % of container width/height so they span naturally */}
+        <DriftBlob initX={50} initY={65} size={900} blur={88} opacity={0.88}
+          color="radial-gradient(ellipse, #6D28D9 0%, #4338CA 40%, #1e1040 100%)" speed={0.007} />
+        <DriftBlob initX={38} initY={55} size={500} blur={65} opacity={0.7}
+          color="radial-gradient(ellipse, #9780FF 0%, #7C3AED 55%, transparent 100%)" speed={0.009} />
+        <DriftBlob initX={62} initY={70} size={380} blur={55} opacity={0.55}
+          color="radial-gradient(ellipse, #2563EB 0%, #1D4ED8 55%, transparent 100%)" speed={0.011} />
 
-        {/* Big wordmark */}
+        {/* Wordmark — one line, edge-to-edge with fluid font size */}
         <h2
           className="relative z-10 font-bold tracking-tighter text-white uppercase text-center leading-none select-none"
-          style={{ fontSize: "clamp(60px, 12vw, 160px)" }}
+          style={{
+            fontSize: "clamp(48px, 13.5vw, 200px)",
+            paddingBottom: "clamp(20px, 4vw, 60px)",
+            // Ensure it stays on one line
+            whiteSpace: "nowrap",
+          }}
         >
           COMMERCE AGENTS
         </h2>
       </div>
 
-      {/* ── BOTTOM BAR ────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto pt-8 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-zinc-600 font-mono">
+      {/* ── BOTTOM COPYRIGHT BAR ────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-zinc-600 font-mono border-t border-white/[0.04]">
         <span>© 2026 Commerce Agents Studio. All Rights Reserved.</span>
         <div className="flex items-center gap-5">
           <span>Privacy policy</span>

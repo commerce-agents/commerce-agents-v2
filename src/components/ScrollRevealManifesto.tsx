@@ -2,14 +2,15 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-// Each phrase unblurs as you scroll through it
-const PHRASES = [
-  { text: "WE BUILD", accent: false },
-  { text: "PRODUCTS", accent: true },   // purple
-  { text: "THAT ACTUALLY", accent: false },
+// Words/phrases that appear one-by-one, fully sharp at their scroll position
+const WORDS = [
+  { text: "WE", accent: false },
+  { text: "BUILD", accent: false },
+  { text: "PRODUCTS", accent: true },
+  { text: "THAT", accent: false },
+  { text: "ACTUALLY", accent: false },
   { text: "CONVERT.", accent: false },
   { text: "NO TEMPLATES.", accent: false },
-  { text: "NO MIDDLEMEN.", accent: false },
   { text: "JUST CRAFT.", accent: true },
 ];
 
@@ -26,65 +27,86 @@ export default function ScrollRevealManifesto() {
       const p = Math.max(0, Math.min(1, -rect.top / trackH));
       setProgress(p);
     };
-
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const total = PHRASES.length;
+  const n = WORDS.length;
 
-  // Each phrase occupies (1/total) of the scroll range
-  // active center = i / (total - 1)
-  const getStyle = (i: number) => {
-    const center = i / (total - 1);
+  const getStyle = (i: number): React.CSSProperties => {
+    // Each word's "sharp zone" is centered at i/(n-1) of scroll progress
+    const center = i / (n - 1);
     const dist = Math.abs(progress - center);
-    // Focus window: ±0.18 of scroll = crisp
-    const t = Math.max(0, 1 - dist / 0.18);
+    // Window of ±0.12 either side = fully sharp. Beyond = blurs out
+    const window = 0.13;
+    const t = Math.max(0, 1 - dist / window);
 
-    const blur = (1 - t) * 22;
-    const opacity = 0.07 + t * 0.93;
-    const scale = 0.88 + t * 0.12;
-    return { filter: `blur(${blur.toFixed(1)}px)`, opacity, transform: `scale(${scale.toFixed(3)})`, transition: "all 0.12s ease-out" };
+    const blur = (1 - t) * 24;
+    const opacity = 0.08 + t * 0.92;
+    const translateY = (1 - t) * 12;
+
+    return {
+      filter: `blur(${blur.toFixed(1)}px)`,
+      opacity,
+      transform: `translateY(${translateY.toFixed(1)}px)`,
+      transition: "filter 0.15s ease-out, opacity 0.15s ease-out, transform 0.15s ease-out",
+      willChange: "filter, opacity, transform",
+    };
   };
 
   return (
-    <section ref={sectionRef} className="relative bg-[#08070A]" style={{ height: "320vh" }}>
+    <section
+      ref={sectionRef}
+      className="relative bg-[#08070A]"
+      style={{ height: `${(n + 2) * 100}vh` }}
+    >
       {/* Sticky viewport */}
-      <div className="sticky top-0 h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+      <div className="sticky top-0 h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
         {/* Ambient glow */}
-        <div className="absolute pointer-events-none w-[500px] h-[300px] rounded-full bg-gradient-to-tr from-[#9780FF]/12 via-[#FF7410]/8 to-transparent blur-[120px]" />
+        <div
+          className="absolute pointer-events-none rounded-full"
+          style={{
+            width: 500, height: 300,
+            background: "radial-gradient(ellipse, rgba(151,128,255,0.12) 0%, rgba(255,116,16,0.07) 50%, transparent 100%)",
+            filter: "blur(80px)",
+          }}
+        />
 
         {/* Eyebrow */}
-        <p className="font-mono text-xs uppercase tracking-widest text-zinc-500 mb-16 z-10">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-500 mb-14 z-10">
           ● MANIFESTO // HOW WE THINK
         </p>
 
-        {/* Stacked phrases */}
-        <div className="flex flex-col items-center gap-3 sm:gap-5 z-10 w-full max-w-4xl text-center select-none">
-          {PHRASES.map((phrase, i) => (
-            <div
-              key={i}
-              style={getStyle(i)}
-              className="will-change-[filter,opacity,transform]"
-            >
+        {/* Words stacked */}
+        <div className="flex flex-col items-center gap-2 sm:gap-4 z-10 w-full max-w-4xl text-center select-none">
+          {WORDS.map((w, i) => (
+            <div key={i} style={getStyle(i)}>
               <span
-                className={`text-4xl sm:text-6xl md:text-7xl font-light tracking-tight leading-none ${
-                  phrase.accent
-                    ? "text-transparent bg-clip-text bg-gradient-to-r from-[#9780FF] to-[#FF7410]"
-                    : "text-white"
-                }`}
+                className="block leading-tight font-light"
+                style={{
+                  fontSize: "clamp(36px, 7vw, 90px)",
+                  background: w.accent
+                    ? "linear-gradient(90deg, #9780FF, #FF7410)"
+                    : undefined,
+                  WebkitBackgroundClip: w.accent ? "text" : undefined,
+                  WebkitTextFillColor: w.accent ? "transparent" : "#F4F3F6",
+                  color: w.accent ? "transparent" : "#F4F3F6",
+                }}
               >
-                {phrase.text}
+                {w.text}
               </span>
             </div>
           ))}
         </div>
 
-        {/* Scroll progress indicator */}
-        <div className="absolute bottom-10 flex items-center gap-2.5 font-mono text-[11px] text-zinc-600 uppercase tracking-widest">
-          <div className="w-24 h-[1px] bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full bg-[#9780FF] transition-all duration-150" style={{ width: `${Math.round(progress * 100)}%` }} />
+        {/* Scroll progress bar */}
+        <div className="absolute bottom-10 flex items-center gap-3 font-mono text-[11px] text-zinc-600 uppercase tracking-widest">
+          <div className="w-20 h-[1px] bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#9780FF]"
+              style={{ width: `${Math.round(progress * 100)}%`, transition: "width 0.1s" }}
+            />
           </div>
           <span>{Math.round(progress * 100)}%</span>
         </div>

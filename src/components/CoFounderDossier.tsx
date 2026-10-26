@@ -84,10 +84,10 @@ export default function CoFounderDossier() {
                     <div className="flex items-center justify-between text-zinc-400">
                       <span>DIRECT EMAIL:</span>
                       <a
-                        href="mailto:santhoshdesignstudio@gmail.com"
+                        href="mailto:hello.commerceagents@gmail.com"
                         className="text-[#9780FF] hover:underline"
                       >
-                        santhoshdesignstudio@gmail.com
+                        hello.commerceagents@gmail.com
                       </a>
                     </div>
                     <div className="flex items-center justify-between text-zinc-400">
@@ -167,11 +167,11 @@ export default function CoFounderDossier() {
               </a>
 
               <a
-                href="mailto:santhoshdesignstudio@gmail.com"
+                href="mailto:hello.commerceagents@gmail.com"
                 className="px-6 py-3 rounded-full border border-white/10 hover:border-[#9780FF]/40 bg-white/[0.02] text-xs font-mono text-zinc-300 transition-colors flex items-center gap-2"
               >
                 <Mail className="w-3.5 h-3.5 text-[#9780FF]" />
-                <span>santhoshdesignstudio@gmail.com</span>
+                <span>hello.commerceagents@gmail.com</span>
               </a>
 
               <a
