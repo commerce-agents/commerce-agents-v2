@@ -10,7 +10,6 @@ interface ClientProject {
   category: string;
   metric: string;
   logo: string;
-  logoType?: "square" | "wide";
   description: string;
   tag: string;
   gradient: string;
@@ -23,7 +22,6 @@ const clients: ClientProject[] = [
     category: "ENTERPRISE EV BATTERY INTELLIGENCE",
     metric: "3-TIER HEALTH TRIAGE",
     logo: "/clients/irasus.png",
-    logoType: "wide",
     description:
       "Enterprise IoT telemetry dashboard for electric vehicle battery packs. Real-time CAN bus telemetry, thermal runaway early warning detection, and automated fleet warranty monitoring.",
     tag: "HARDWARE TELEMETRY",
@@ -35,7 +33,6 @@ const clients: ClientProject[] = [
     category: "0→1 D2C PET COMMERCE",
     metric: "ZERO-TO-ONE ARCHITECTURE",
     logo: "/clients/wetwopets.png",
-    logoType: "wide",
     description:
       "Curated premium pet nutrition commerce platform. Built with intelligent breed/weight matching algorithms, automated recurring subscriptions, and seamless zero-latency cart checkout.",
     tag: "D2C COMMERCE",
@@ -47,7 +44,6 @@ const clients: ClientProject[] = [
     category: "MODULAR HARDWARE E-STORE",
     metric: "1,200+ PACKS SHIPPED",
     logo: "/clients/makeon.png",
-    logoType: "square",
     description:
       "E-commerce storefront and interactive project build loops for adhesive, wearable electronics and STEM circuit components shipped worldwide.",
     tag: "HARDWARE RETAIL",
@@ -59,7 +55,6 @@ const clients: ClientProject[] = [
     category: "0→1 FOOD DELIVERY PWA & BOT",
     metric: "SUB-SECOND KITCHEN SYNC",
     logo: "/clients/vidyas-kitchen.png",
-    logoType: "square",
     description:
       "Hyperlocal food ordering PWA paired with an automated WhatsApp dispatch bot and live kitchen order management board, eliminating food aggregator commission overhead.",
     tag: "FOOD ENGINE PWA",
@@ -97,7 +92,7 @@ export default function ClientConstellation() {
           </div>
         </div>
 
-        {/* 4 Client Cards Grid with Real Logos */}
+        {/* 4 Client Cards Grid with Brand Name beside Logo */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {clients.map((client) => {
             const isHovered = hoveredClient === client.id;
@@ -127,7 +122,7 @@ export default function ClientConstellation() {
                 />
 
                 {/* Top Meta: Category + Live Ping */}
-                <div className="flex items-center justify-between mb-8 relative z-10">
+                <div className="flex items-center justify-between mb-6 relative z-10">
                   <span className="text-[11px] font-mono tracking-wider uppercase text-zinc-400">
                     {client.category}
                   </span>
@@ -137,38 +132,29 @@ export default function ClientConstellation() {
                   </span>
                 </div>
 
-                {/* Real Full-Color Client Logo Container */}
-                <div className="relative h-28 w-full flex items-center justify-start mb-6 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm">
-                  {client.logoType === "square" ? (
-                    <div className="relative w-20 h-20 transition-transform duration-300 group-hover:scale-105 rounded-xl overflow-hidden shadow-lg">
-                      <Image
-                        src={client.logo}
-                        alt={client.name}
-                        fill
-                        className="object-contain object-left"
-                        priority
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative w-56 h-16 transition-transform duration-300 group-hover:scale-105 rounded-lg overflow-hidden">
-                      <Image
-                        src={client.logo}
-                        alt={client.name}
-                        fill
-                        className="object-contain object-left drop-shadow-md"
-                        priority
-                      />
-                    </div>
-                  )}
-                </div>
+                {/* Brand Name directly beside Logo */}
+                <div className="flex items-center gap-5 mb-6 relative z-10">
+                  {/* Clean Logo Container */}
+                  <div className="relative w-28 h-18 sm:w-32 sm:h-20 shrink-0 p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105 shadow-sm">
+                    <Image
+                      src={client.logo}
+                      alt={client.name}
+                      fill
+                      className="object-contain p-1.5 drop-shadow-md"
+                      priority
+                    />
+                  </div>
 
-                {/* Client Name & Metric */}
-                <div className="relative z-10 mb-4">
-                  <h3 className="text-2xl font-light text-white mb-2 group-hover:text-[#9780FF] transition-colors">
-                    {client.name}
-                  </h3>
-                  <div className="inline-block px-3 py-1 rounded-full bg-[#9780FF]/10 border border-[#9780FF]/25 text-xs font-mono text-[#00F0FF]">
-                    {client.metric}
+                  {/* Brand Name & Metric Badge beside the logo */}
+                  <div className="flex flex-col justify-center min-w-0 flex-1">
+                    <h3 className="text-xl sm:text-2xl font-light text-white group-hover:text-[#9780FF] transition-colors tracking-tight truncate">
+                      {client.name}
+                    </h3>
+                    <div className="mt-2">
+                      <span className="inline-block px-3 py-1 rounded-full bg-[#9780FF]/10 border border-[#9780FF]/25 text-xs font-mono text-[#00F0FF]">
+                        {client.metric}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
