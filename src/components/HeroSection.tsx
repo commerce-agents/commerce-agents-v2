@@ -191,7 +191,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     };
   }, []);
 
-  // ─── 3. Dynamic 3-Card Parallax & Tilting ───────────────────────────────────
+  // ─── 3. Dynamic 3-Card Parallax & Tilting (Desktop/Tablet) ─────────────────
   useEffect(() => {
     let raf: number;
 
@@ -229,7 +229,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex flex-col justify-center items-center pt-32 pb-24 px-4 sm:px-6 md:px-12 bg-[#09080A] overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center items-center pt-28 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 md:px-12 bg-[#09080A] overflow-hidden"
     >
       {/* Background Chromatic Video Loop */}
       <div
@@ -254,25 +254,25 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
         {/* Eyebrow Badge */}
         <div
           ref={eyebrowRef}
-          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)]"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)] max-w-full"
         >
-          <span className="relative flex h-2 w-2">
+          <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9780FF] opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9780FF]" />
           </span>
-          <span className="font-mono text-xs uppercase tracking-wider text-zinc-300">
+          <span className="font-mono text-[11px] sm:text-xs uppercase tracking-wider text-zinc-300 truncate">
             0→1 COMMERCE STUDIO // CHENNAI NODE
           </span>
-          <span className="text-zinc-600">|</span>
-          <span className="font-mono text-[11px] text-[#FF7410]">PROTOTYPE TO SCALE</span>
+          <span className="text-zinc-600 hidden sm:inline">|</span>
+          <span className="font-mono text-[11px] text-[#FF7410] hidden sm:inline">PROTOTYPE TO SCALE</span>
         </div>
 
         {/* Real Hero Headline – starts at dead center, unblurs and glides smoothly up */}
         <h1
           ref={titleRef}
-          className="font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform"
+          className="font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform max-w-full"
           style={{
-            fontSize: "clamp(30px, 6.8vw, 88px)",
+            fontSize: "clamp(22px, 6.4vw, 88px)",
             letterSpacing: "0.14em",
             whiteSpace: "nowrap",
           }}
@@ -286,14 +286,14 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
           className="flex flex-col items-center w-full will-change-transform"
         >
           {/* Subtitle */}
-          <p className="font-editorial text-xl sm:text-2xl text-zinc-300 font-light tracking-wide mt-5 mb-12 max-w-2xl">
+          <p className="font-editorial text-lg sm:text-2xl text-zinc-300 font-light tracking-wide mt-4 sm:mt-5 mb-8 sm:mb-12 max-w-2xl px-2">
             The 0→1 Product Design &amp; Autonomous Commerce Studio
           </p>
 
-          {/* ─── 3 CONNECTED 3D STATS CARDS WITH NEON CONDUITS ──────────────────── */}
+          {/* ─── 3 CONNECTED 3D STATS CARDS: DESKTOP & TABLET ONLY (HIDDEN ON MOBILE) ─── */}
           <div
             ref={cardsContainerRef}
-            className="relative w-full max-w-6xl flex items-center justify-center my-6"
+            className="hidden md:flex relative w-full max-w-6xl items-center justify-center my-6"
             style={{ minHeight: 440 }}
           >
             {/* Volumetric Organic Iridescent Glow behind cards */}
@@ -370,7 +370,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
               <circle cx="820" cy="220" r="4.5" fill="#FF7410" filter="url(#neonCyan)" />
             </svg>
 
-            {/* ── CARD 1: Left Card (Tilted Inward) – WE TWO PETS D2C STATS ───────── */}
+            {/* ── CARD 1: Left Card – WE TWO PETS D2C STATS ───────── */}
             <div
               ref={leftCardRef}
               style={{ willChange: "transform", zIndex: 12 }}
@@ -412,7 +412,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
               </div>
             </div>
 
-            {/* ── CARD 2: Center Card (Main Device) – COMMERCE ENGINE TERMINAL ───── */}
+            {/* ── CARD 2: Center Card – COMMERCE ENGINE TERMINAL ───── */}
             <div
               ref={centerCardRef}
               style={{ willChange: "transform", zIndex: 20 }}
@@ -462,7 +462,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
               </div>
             </div>
 
-            {/* ── CARD 3: Right Card (Tilted Inward) – IRASUS EV TELEMETRY STATS ───── */}
+            {/* ── CARD 3: Right Card – IRASUS EV TELEMETRY STATS ───── */}
             <div
               ref={rightCardRef}
               style={{ willChange: "transform", zIndex: 12 }}
@@ -506,7 +506,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
           </div>
 
           {/* CTA Actions */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
+          <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 mt-4 sm:mt-6 w-full sm:w-auto px-4 sm:px-0">
             <a
               href="#contact"
               className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#9780FF] via-[#a892ff] to-[#FF7410] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_30px_rgba(151,128,255,0.4)] hover:scale-105 flex items-center justify-center gap-2"
