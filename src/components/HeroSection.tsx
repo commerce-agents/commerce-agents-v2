@@ -31,9 +31,9 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     const surrounding = surroundingRef.current;
     const eyebrow = eyebrowRef.current;
     const videoBg = videoBgRef.current;
+    const canvas = canvasRef.current;
     if (!title || !surrounding) return;
 
-    // Scroll to top
     window.scrollTo(0, 0);
 
     // Calculate vertical distance to dead center of viewport
@@ -42,23 +42,24 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     const titleCenterY = rect.top + rect.height / 2;
     const deltaY = viewportCenterY - titleCenterY;
 
-    // Initial state: Title starts in the exact center of screen, blurred and wide
+    // Initial state: Only the title exists on screen at dead center, blurred and wide
     gsap.set(title, {
       y: deltaY,
-      filter: "blur(36px)",
+      filter: "blur(38px)",
       opacity: 0,
       scale: 0.94,
       letterSpacing: "0.35em",
     });
 
-    // All other contents start hidden
+    // Everything else is completely invisible
     if (eyebrow) gsap.set(eyebrow, { opacity: 0, y: -16 });
     gsap.set(surrounding, { opacity: 0, y: 25 });
     if (videoBg) gsap.set(videoBg, { opacity: 0 });
+    if (canvas) gsap.set(canvas, { opacity: 0 });
 
     const tl = gsap.timeline();
 
-    // 1. Text unblurs to crystal clear vision in center of screen
+    // 1. COMMERCE AGENTS unblurs to crystal clear vision in the center
     tl.to(title, {
       opacity: 1,
       filter: "blur(0px)",
@@ -66,7 +67,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
       letterSpacing: "0.14em",
       duration: 1.45,
       ease: "power3.out",
-      delay: 0.2,
+      delay: 0.25,
     })
       // 2. Hold sharply in center for impact
       .to({}, { duration: 0.35 })
@@ -76,14 +77,14 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
         duration: 1.15,
         ease: "power3.inOut",
       })
-      // 4. Reveal surrounding Hero elements (eyebrow, subtitle, 3 cards, CTAs)
+      // 4. Reveal surrounding Hero elements (stars, glow, eyebrow, subtitle, cards, CTAs)
       .to(
-        [eyebrow, surrounding, videoBg],
+        [videoBg, canvas, eyebrow, surrounding],
         {
           opacity: 1,
           y: 0,
-          duration: 0.85,
-          stagger: 0.1,
+          duration: 0.9,
+          stagger: 0.08,
           ease: "power2.out",
           onComplete: () => {
             onIntroComplete?.();
