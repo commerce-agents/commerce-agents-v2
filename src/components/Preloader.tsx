@@ -13,11 +13,12 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const [isFinished, setIsFinished] = useState(false);
   const preloaderRef = useRef<HTMLDivElement>(null);
   const lottieContainerRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
+  const titleTextRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const animInstance = useRef<any>(null);
 
-  // ─── Load Lottie ───────────────────────────────────────────────────────────
+  // ─── 1. Load Lottie Animation ──────────────────────────────────────────────
   useEffect(() => {
     if (!lottieContainerRef.current) return;
     animInstance.current = lottie.loadAnimation({
@@ -27,20 +28,43 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       autoplay: true,
       path: "/lottie/preloader.json",
     });
-    return () => { if (animInstance.current) animInstance.current.destroy(); };
+    return () => {
+      if (animInstance.current) animInstance.current.destroy();
+    };
   }, []);
 
-  // ─── Animate "COMMERCE AGENTS" text: blur → sharp ─────────────────────────
+  // ─── 2. "COMMERCE AGENTS" centered blur → sharp + letter spacing animation ──
   useEffect(() => {
-    if (!textRef.current) return;
+    if (!titleTextRef.current) return;
     gsap.fromTo(
-      textRef.current,
-      { filter: "blur(40px)", letterSpacing: "0.5em", opacity: 0.4 },
-      { filter: "blur(0px)", letterSpacing: "0.18em", opacity: 1, duration: 2.8, ease: "power3.out", delay: 0.3 }
+      titleTextRef.current,
+      {
+        filter: "blur(42px)",
+        letterSpacing: "0.55em",
+        opacity: 0,
+        scale: 0.94,
+      },
+      {
+        filter: "blur(0px)",
+        letterSpacing: "0.14em",
+        opacity: 1,
+        scale: 1,
+        duration: 2.6,
+        ease: "power3.out",
+        delay: 0.2,
+      }
     );
+
+    if (subtitleRef.current) {
+      gsap.fromTo(
+        subtitleRef.current,
+        { opacity: 0, y: 15, filter: "blur(8px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.8, ease: "power2.out", delay: 0.9 }
+      );
+    }
   }, []);
 
-  // ─── Progress counter ──────────────────────────────────────────────────────
+  // ─── 3. Progress counter ───────────────────────────────────────────────────
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
@@ -49,11 +73,11 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         current = 100;
         clearInterval(interval);
         setProgress(100);
-        setTimeout(finishIntro, 500);
+        setTimeout(finishIntro, 400);
       } else {
         setProgress(current);
       }
-    }, 40);
+    }, 38);
     return () => clearInterval(interval);
   }, []);
 
@@ -66,18 +90,18 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         if (onComplete) onComplete();
       },
     })
-      .to(lottieContainerRef.current, { scale: 1.1, opacity: 0, duration: 0.5, ease: "power2.inOut" })
-      .to(textRef.current, { opacity: 0, y: -20, duration: 0.4, ease: "power2.out" }, "-=0.4")
+      .to(lottieContainerRef.current, { scale: 1.1, opacity: 0, duration: 0.4, ease: "power2.inOut" })
+      .to(titleTextRef.current, { opacity: 0, y: -25, filter: "blur(12px)", duration: 0.45, ease: "power2.in" }, "-=0.35")
       .to(bottomRef.current, { opacity: 0, duration: 0.3 }, "-=0.3")
-      .to(preloaderRef.current, { yPercent: -100, duration: 0.85, ease: "expo.inOut" }, "-=0.1");
+      .to(preloaderRef.current, { yPercent: -100, duration: 0.8, ease: "expo.inOut" }, "-=0.1");
   };
 
   return (
     <div
       ref={preloaderRef}
-      className="fixed inset-0 z-[9999] flex flex-col justify-between bg-[#080709] px-6 py-8 md:px-12 md:py-10 select-none"
+      className="fixed inset-0 z-[9999] flex flex-col justify-between bg-[#080709] px-6 py-8 md:px-12 md:py-10 select-none overflow-hidden"
     >
-      {/* Top bar */}
+      {/* Top Telemetry Bar */}
       <div className="flex items-center justify-between text-xs tracking-wider uppercase font-mono text-zinc-400">
         <div className="flex items-center gap-3">
           <span className="relative flex h-2 w-2">
@@ -91,41 +115,53 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           className="group flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 hover:border-[#9780FF]/40 bg-white/[0.02] hover:bg-[#9780FF]/10 text-zinc-400 hover:text-white transition-all duration-300 text-[11px]"
         >
           <span>SKIP INTRO</span>
-          <span className="text-[9px]">[ESC]</span>
+          <span className="text-[9px] text-zinc-500">[ESC]</span>
         </button>
       </div>
 
-      {/* Center: Lottie above, then big blurred→clear wordmark below */}
-      <div className="flex flex-col items-center justify-center gap-10 my-auto">
-        {/* Ambient glow */}
-        <div className="absolute w-80 h-80 rounded-full bg-gradient-to-tr from-[#9780FF]/25 via-[#FF7410]/15 to-transparent blur-[100px] pointer-events-none" />
-
-        {/* Lottie animation */}
+      {/* Dead Center: Lottie + Big Blur-to-Clear "COMMERCE AGENTS" */}
+      <div className="flex flex-col items-center justify-center my-auto relative w-full text-center">
+        {/* Ambient atmospheric glow */}
         <div
-          ref={lottieContainerRef}
-          className="relative w-28 h-28 sm:w-40 sm:h-40 flex items-center justify-center"
+          className="absolute w-[480px] h-[480px] rounded-full pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(151,128,255,0.22) 0%, rgba(255,116,16,0.12) 50%, transparent 75%)",
+            filter: "blur(90px)",
+          }}
         />
 
-        {/* Big "COMMERCE AGENTS" blur-to-sharp */}
-        <div ref={textRef} className="flex flex-col items-center gap-1 text-center">
-          <h1
-            className="font-bold text-white uppercase leading-none"
-            style={{ fontSize: "clamp(36px, 9vw, 110px)", letterSpacing: "0.18em" }}
-          >
-            COMMERCE AGENTS
-          </h1>
-          <p className="font-mono text-xs text-zinc-400 tracking-widest uppercase mt-3">
-            0→1 PRODUCT &amp; COMMERCE STUDIO
-          </p>
-        </div>
+        {/* Lottie Animation */}
+        <div
+          ref={lottieContainerRef}
+          className="relative w-28 h-28 sm:w-36 sm:h-36 mb-6 flex items-center justify-center"
+        />
 
-        {/* Progress bar */}
-        <div className="flex flex-col items-center gap-3 mt-2">
+        {/* Big "COMMERCE AGENTS" Wordmark with Blur-to-Clear & Letter Spacing */}
+        <h1
+          ref={titleTextRef}
+          className="font-bold text-white uppercase leading-none select-none drop-shadow-[0_15px_40px_rgba(151,128,255,0.3)]"
+          style={{
+            fontSize: "clamp(34px, 8.5vw, 108px)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          COMMERCE AGENTS
+        </h1>
+
+        <p
+          ref={subtitleRef}
+          className="font-mono text-xs sm:text-sm text-zinc-400 tracking-[0.25em] uppercase mt-4"
+        >
+          0→1 PRODUCT DESIGN &amp; AUTONOMOUS COMMERCE
+        </p>
+
+        {/* Progress Counter & Line */}
+        <div className="flex flex-col items-center gap-3 mt-10">
           <div className="font-mono text-3xl font-light text-white flex items-baseline gap-1">
             <span>{String(progress).padStart(2, "0")}</span>
             <span className="text-base text-[#9780FF]">%</span>
           </div>
-          <div className="w-56 h-[2px] bg-white/10 rounded-full overflow-hidden">
+          <div className="w-56 sm:w-72 h-[2px] bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-[#9780FF] via-[#FF7410] to-[#00F0FF] transition-all duration-150 ease-out"
               style={{ width: `${progress}%` }}
@@ -134,7 +170,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         </div>
       </div>
 
-      {/* Bottom telemetry */}
+      {/* Bottom Telemetry Bar */}
       <div
         ref={bottomRef}
         className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-[11px] font-mono text-zinc-400 border-t border-white/5 pt-4 gap-2"
@@ -144,7 +180,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           <span className="hidden sm:inline text-zinc-600">|</span>
           <span>COORDS: 13.0604° N, 80.2496° E</span>
           <span className="hidden md:inline text-zinc-600">|</span>
-          <span className="hidden md:inline">NUNGAMBAKKAM, CHENNAI</span>
+          <span className="hidden md:inline">CHENNAI, INDIA</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
