@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Sparkles, ExternalLink, Cpu, ShoppingBag, Utensils, Zap, Activity } from "lucide-react";
+import { Sparkles, ArrowUpRight, Activity, ExternalLink } from "lucide-react";
 
-interface ClientItem {
+interface ClientProject {
   id: string;
   name: string;
   category: string;
@@ -15,13 +15,13 @@ interface ClientItem {
   gradient: string;
 }
 
-const clients: ClientItem[] = [
+const clients: ClientProject[] = [
   {
     id: "irasus",
     name: "iRasus Technologies",
-    category: "EV BATTERY TELEMETRY & IOT",
+    category: "ENTERPRISE EV BATTERY INTELLIGENCE",
     metric: "3-TIER HEALTH TRIAGE",
-    logo: "/clients/irasus-norm.webp",
+    logo: "/clients/irasus.png",
     description:
       "Enterprise IoT telemetry dashboard for electric vehicle battery packs. Real-time CAN bus telemetry, thermal runaway early warning detection, and automated fleet warranty monitoring.",
     tag: "HARDWARE TELEMETRY",
@@ -54,7 +54,7 @@ const clients: ClientItem[] = [
     name: "Vidya's Kitchen",
     category: "0→1 FOOD DELIVERY PWA & BOT",
     metric: "SUB-SECOND KITCHEN SYNC",
-    logo: "/clients/vidyas-kitchen.webp",
+    logo: "/clients/vidyas-kitchen.png",
     description:
       "Hyperlocal food ordering PWA paired with an automated WhatsApp dispatch bot and live kitchen order management board, eliminating food aggregator commission overhead.",
     tag: "FOOD ENGINE PWA",
@@ -133,8 +133,8 @@ export default function ClientConstellation() {
                 </div>
 
                 {/* Real Full-Color Client Logo (High Visibility) */}
-                <div className="relative h-24 w-full flex items-center justify-start mb-6 p-3 rounded-2xl bg-white/[0.02] border border-white/5">
-                  <div className="relative w-52 h-16 transition-transform duration-300 group-hover:scale-105">
+                <div className="relative h-24 w-full flex items-center justify-start mb-6 p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                  <div className="relative w-56 h-16 transition-transform duration-300 group-hover:scale-105">
                     <Image
                       src={client.logo}
                       alt={client.name}

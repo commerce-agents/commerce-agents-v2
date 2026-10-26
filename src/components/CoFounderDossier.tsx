@@ -47,7 +47,7 @@ export default function CoFounderDossier() {
                 {/* Image: Black & White by default, Full Colors on Hover */}
                 <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#0A090C]">
                   <Image
-                    src="/cofounder/santhosh-suit.png"
+                    src="/images/santhosh-a.png"
                     alt="Santhosh A - Co-Founder & Lead Design Engineer"
                     fill
                     className={`object-cover object-top transition-all duration-700 ease-out group-hover:scale-105 ${

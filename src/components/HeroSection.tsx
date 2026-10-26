@@ -1,21 +1,133 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, Zap, Sparkles, Terminal } from "lucide-react";
 import gsap from "gsap";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  onIntroComplete?: () => void;
+}
+
+export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mousePosRef = useRef({ x: -1000, y: -1000, targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
+  const videoRef = useRef<HTMLDivElement>(null);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
   const blob1Ref = useRef<HTMLDivElement>(null);
   const blob2Ref = useRef<HTMLDivElement>(null);
   const deviceRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
 
-  // ─── 1. White Dot Stars Canvas inside Hero Section ─────────────────────────
+  const [introStarted, setIntroStarted] = useState(false);
+  const mousePosRef = useRef({ x: -1000, y: -1000, targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
+
+  // ─── 1. Cinematic Opening: Centered blur-to-clear text → glide up to Hero ───
+  useEffect(() => {
+    if (!titleRef.current) return;
+
+    // Scroll to top instantly
+    window.scrollTo(0, 0);
+    document.body.style.overflow = "hidden";
+
+    const titleEl = titleRef.current;
+    const rect = titleEl.getBoundingClientRect();
+    const viewportCenterY = window.innerHeight / 2;
+    const titleCenterY = rect.top + rect.height / 2;
+    const deltaY = viewportCenterY - titleCenterY;
+
+    // Initial state: Set title directly at viewport center with heavy blur & wide spacing
+    gsap.set(titleEl, {
+      y: deltaY,
+      filter: "blur(42px)",
+      opacity: 0,
+      letterSpacing: "0.55em",
+      scale: 0.94,
+    });
+
+    // All surrounding elements start completely hidden
+    if (eyebrowRef.current) gsap.set(eyebrowRef.current, { opacity: 0, y: -18 });
+    if (subtitleRef.current) gsap.set(subtitleRef.current, { opacity: 0, y: 22 });
+    if (blob1Ref.current) gsap.set(blob1Ref.current, { opacity: 0, scale: 0.75 });
+    if (blob2Ref.current) gsap.set(blob2Ref.current, { opacity: 0, scale: 0.75 });
+    if (deviceRef.current) gsap.set(deviceRef.current, { opacity: 0, y: 35 });
+    if (ctaRef.current) gsap.set(ctaRef.current, { opacity: 0, y: 20 });
+    if (videoRef.current) gsap.set(videoRef.current, { opacity: 0 });
+    if (canvasRef.current) gsap.set(canvasRef.current, { opacity: 0 });
+
+    setIntroStarted(true);
+
+    // ── Phase 1: Unblur & sharpen title at center of screen ──
+    const tl = gsap.timeline();
+
+    tl.to(titleEl, {
+      filter: "blur(0px)",
+      opacity: 1,
+      letterSpacing: "0.14em",
+      scale: 1,
+      duration: 1.8,
+      ease: "power3.out",
+      delay: 0.25,
+    })
+      // ── Phase 2: Hold briefly, then move UP into Hero position ──
+      .to(titleEl, {
+        y: 0,
+        duration: 1.25,
+        ease: "power3.inOut",
+        delay: 0.35,
+      })
+      // ── Phase 3: Surrounding Hero parts smoothly fade into view ──
+      .to(
+        [
+          eyebrowRef.current,
+          subtitleRef.current,
+          ctaRef.current,
+          deviceRef.current,
+        ],
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.95,
+          stagger: 0.1,
+          ease: "power2.out",
+        },
+        "-=0.7"
+      )
+      .to(
+        [blob1Ref.current, blob2Ref.current],
+        {
+          opacity: 0.8,
+          scale: 1,
+          duration: 1.2,
+          ease: "power2.out",
+        },
+        "-=0.9"
+      )
+      .to(
+        [canvasRef.current, videoRef.current],
+        {
+          opacity: 1,
+          duration: 1.0,
+          ease: "power2.out",
+          onComplete: () => {
+            document.body.style.overflow = "";
+            onIntroComplete?.();
+          },
+        },
+        "-=0.8"
+      );
+
+    return () => {
+      document.body.style.overflow = "";
+      tl.kill();
+    };
+  }, [onIntroComplete]);
+
+  // ─── 2. Interactive White Star Canvas inside Hero ───────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !containerRef.current) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -29,8 +141,7 @@ export default function HeroSection() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Create 130 crisp white & soft tint stars
-    const N = 130;
+    const N = 120;
     const colors = ["#FFFFFF", "#FFFFFF", "#F8FAFC", "#E0E7FF", "#C4B5FD", "#9780FF"];
     const pts = Array.from({ length: N }, () => {
       const x = Math.random() * (canvas.width || window.innerWidth);
@@ -38,8 +149,6 @@ export default function HeroSection() {
       return {
         x,
         y,
-        baseX: x,
-        baseY: y,
         vx: (Math.random() - 0.5) * 0.28,
         vy: (Math.random() - 0.5) * 0.28,
         r: Math.random() * 1.5 + 0.6,
@@ -57,7 +166,6 @@ export default function HeroSection() {
       mousePosRef.current.x = mx;
       mousePosRef.current.y = my;
 
-      // Normalized coordinates (-1 to 1) for 3D tilt & blob drift
       const cx = rect.width / 2;
       const cy = rect.height / 2;
       mousePosRef.current.targetX = (mx - cx) / cx;
@@ -75,17 +183,14 @@ export default function HeroSection() {
       const my = mousePosRef.current.y;
 
       for (const p of pts) {
-        // Natural drift
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap around borders
         if (p.x < 0) p.x = w;
         if (p.x > w) p.x = 0;
         if (p.y < 0) p.y = h;
         if (p.y > h) p.y = 0;
 
-        // Mouse repulsion & interaction
         const dx = mx - p.x;
         const dy = my - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -97,7 +202,6 @@ export default function HeroSection() {
           p.y -= (dy / dist) * force;
         }
 
-        // Star twinkle
         p.alpha += Math.sin(Date.now() * p.twinkleSpeed) * 0.01;
         const curAlpha = Math.max(0.2, Math.min(1, p.alpha));
 
@@ -123,7 +227,7 @@ export default function HeroSection() {
     };
   }, []);
 
-  // ─── 2. Smooth Mouse-Tracked Iridescent Blob & Device Tilt ───────────────────
+  // ─── 3. Mouse-Tracked Iridescent Blob & Device Tilt ─────────────────────────
   useEffect(() => {
     let raf: number;
 
@@ -154,7 +258,11 @@ export default function HeroSection() {
       className="relative min-h-screen flex flex-col justify-center items-center pt-32 pb-24 px-4 sm:px-8 md:px-12 bg-[#09080A] overflow-hidden"
     >
       {/* Background Chromatic Video Loop */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      <div
+        ref={videoRef}
+        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        style={{ opacity: 0 }}
+      >
         <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-20 scale-105">
           <source src="/video/hero-bg.mp4" type="video/mp4" />
         </video>
@@ -162,16 +270,21 @@ export default function HeroSection() {
         <div className="absolute inset-0 pixel-grid-bg opacity-25" />
       </div>
 
-      {/* Interactive White Dot Stars Canvas – Mounted directly inside Hero */}
+      {/* Interactive White Dot Stars Canvas */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none z-10"
+        style={{ opacity: 0 }}
       />
 
       {/* Hero Foreground Content */}
       <div className="relative max-w-6xl mx-auto flex flex-col items-center text-center z-20">
         {/* Eyebrow Badge */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)]">
+        <div
+          ref={eyebrowRef}
+          style={{ opacity: 0 }}
+          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)]"
+        >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9780FF] opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9780FF]" />
@@ -183,20 +296,27 @@ export default function HeroSection() {
           <span className="font-mono text-[11px] text-[#FF7410]">PROTOTYPE TO SCALE</span>
         </div>
 
-        {/* Hero Title – Solid, crisp, sharp in one single line (No preloader blur effect here) */}
+        {/* Hero Title – Centers on open with blur-to-clear, then glides up here */}
         <h1
+          ref={titleRef}
+          style={{ willChange: "transform, filter, opacity" }}
           className="text-4xl sm:text-6xl md:text-7xl lg:text-[88px] font-extralight text-white tracking-[0.14em] uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)]"
         >
           COMMERCE AGENTS
         </h1>
 
-        <p className="font-editorial text-xl sm:text-2xl text-zinc-300 font-light tracking-wide mt-5 mb-14 max-w-2xl">
+        {/* Subtitle */}
+        <p
+          ref={subtitleRef}
+          style={{ opacity: 0 }}
+          className="font-editorial text-xl sm:text-2xl text-zinc-300 font-light tracking-wide mt-5 mb-14 max-w-2xl"
+        >
           The 0→1 Product Design &amp; Autonomous Commerce Studio
         </p>
 
         {/* Center 3D Iridescent Moving Blob + Interactive Device Card */}
         <div className="relative w-full max-w-3xl flex items-center justify-center mb-14" style={{ height: 440 }}>
-          {/* Prominent Iridescent Primary Center Blob (Visible & Organically Moving) */}
+          {/* Prominent Iridescent Primary Center Blob */}
           <div
             ref={blob1Ref}
             className="pointer-events-none transition-transform duration-75 ease-out"
@@ -210,6 +330,7 @@ export default function HeroSection() {
               background: "radial-gradient(circle, rgba(151,128,255,0.6) 0%, rgba(115,34,242,0.45) 40%, rgba(255,116,16,0.25) 70%, transparent 80%)",
               filter: "blur(75px)",
               willChange: "transform",
+              opacity: 0,
             }}
           />
 
@@ -227,13 +348,14 @@ export default function HeroSection() {
               background: "radial-gradient(circle, rgba(0,240,255,0.35) 0%, rgba(59,130,246,0.25) 50%, transparent 75%)",
               filter: "blur(65px)",
               willChange: "transform",
+              opacity: 0,
             }}
           />
 
           {/* 3D Tilting Glass Device Card */}
           <div
             ref={deviceRef}
-            style={{ willChange: "transform", position: "relative", zIndex: 10 }}
+            style={{ willChange: "transform", position: "relative", zIndex: 10, opacity: 0 }}
             className="w-full max-w-sm sm:max-w-md p-1.5 rounded-[36px] bg-gradient-to-b from-white/20 via-white/5 to-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_60px_rgba(151,128,255,0.35)] backdrop-blur-xl border border-white/20"
           >
             <div className="relative rounded-[30px] bg-[#0E0D12]/90 backdrop-blur-2xl overflow-hidden border border-white/10 p-5 text-left">
@@ -282,7 +404,11 @@ export default function HeroSection() {
         </div>
 
         {/* CTA Actions */}
-        <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div
+          ref={ctaRef}
+          style={{ opacity: 0 }}
+          className="flex flex-col sm:flex-row items-center gap-4"
+        >
           <a
             href="#contact"
             className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#9780FF] via-[#a892ff] to-[#FF7410] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_30px_rgba(151,128,255,0.4)] hover:scale-105 flex items-center justify-center gap-2"

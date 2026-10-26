@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
-export default function Navbar() {
+export default function Navbar({ isVisible = true }: { isVisible?: boolean }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [chennaiTime, setChennaiTime] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -47,7 +47,9 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-4 px-4 sm:px-8 md:px-12 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out py-4 px-4 sm:px-8 md:px-12 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6 pointer-events-none"
+        } ${
           scrolled ? "bg-[#09080A]/80 backdrop-blur-xl border-b border-white/5 py-3" : ""
         }`}
       >
