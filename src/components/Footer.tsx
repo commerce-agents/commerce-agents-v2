@@ -85,25 +85,30 @@ export default function Footer() {
       }}
     >
       {/* ── TOP SECTION: Direct Inquiries & Sprint Commission ────────────────── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex flex-col md:flex-row items-start md:items-end justify-between gap-10 mb-20">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-[#9780FF] mb-3">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12 lg:gap-24 mb-24">
+        {/* Left: Email in one single clean line with generous breathing room */}
+        <div className="min-w-0 flex-1">
+          <p className="font-mono text-xs uppercase tracking-widest text-[#9780FF] mb-4">
             ● INITIATE COLLABORATION // DIRECT CHANNEL
           </p>
           <a
             href="mailto:hello.commerceagents@gmail.com"
-            className="block font-light text-white tracking-tight leading-none hover:text-[#9780FF] transition-colors duration-300 break-all"
-            style={{ fontSize: "clamp(24px, 4.2vw, 58px)" }}
+            className="inline-block font-light text-white tracking-tight leading-none hover:text-[#9780FF] transition-colors duration-300"
+            style={{
+              fontSize: "clamp(20px, 2.6vw, 42px)",
+              whiteSpace: "nowrap",
+            }}
           >
             hello.commerceagents@gmail.com
           </a>
         </div>
 
-        <div className="shrink-0 flex flex-col items-start md:items-end">
-          <h4 className="text-xl sm:text-2xl font-light text-white tracking-tight mb-1">
+        {/* Right: Upgrade / Commission Callout */}
+        <div className="shrink-0 flex flex-col items-start lg:items-end">
+          <h4 className="text-xl sm:text-2xl font-light text-white tracking-tight mb-2">
             Upgrade Your Commerce Reality
           </h4>
-          <p className="text-xs text-zinc-400 font-light mb-6 md:text-right max-w-xs">
+          <p className="text-xs text-zinc-400 font-light mb-6 lg:text-right max-w-sm leading-relaxed">
             Commission a dedicated 0→1 build sprint with Santhosh A. Bespoke design &amp; engineering.
           </p>
           <a
@@ -117,7 +122,6 @@ export default function Footer() {
       </div>
 
       {/* ── FULL-BLEED BOTTOM HORIZON GRADIENT & ANIMATED RANDOM BLOBS ─────── */}
-      {/* Spans naturally edge-to-edge across the full viewport bottom */}
       <div className="relative w-full overflow-hidden pt-12">
         {/* Layered natural gradient bloom along the entire bottom edge */}
         <div
