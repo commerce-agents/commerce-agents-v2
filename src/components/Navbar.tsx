@@ -51,7 +51,7 @@ export default function Navbar({ isVisible = true }: { isVisible?: boolean }) {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out py-4 px-4 sm:px-8 md:px-12 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6 pointer-events-none"
         } ${
-          scrolled ? "bg-[#09080A]/85 backdrop-blur-xl border-b border-white/5 py-3" : ""
+          scrolled ? "bg-[#09080A]/85 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.6)] py-3" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
