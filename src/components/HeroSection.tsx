@@ -4,11 +4,17 @@ import React, { useEffect, useRef } from "react";
 import { ArrowDown, ArrowUpRight, Zap, Sparkles, Terminal, Activity, Cpu } from "lucide-react";
 import gsap from "gsap";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  onIntroComplete?: () => void;
+}
+
+export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const elementsRef = useRef<HTMLDivElement>(null);
+  const surroundingRef = useRef<HTMLDivElement>(null);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
+  const videoBgRef = useRef<HTMLDivElement>(null);
 
   // 3D Tilt Card container ref
   const cardsContainerRef = useRef<HTMLDivElement>(null);
@@ -19,60 +25,69 @@ export default function HeroSection() {
 
   const mousePosRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
 
-  // ─── 1. Fail-Safe, Buttery Smooth Opening Animation ─────────────────────────
+  // ─── 1. Cinematic Intro: Center Blur-to-Clear → Move Up → Reveal Contents ──
   useEffect(() => {
     const title = titleRef.current;
-    const elements = elementsRef.current;
-    if (!title || !elements) return;
+    const surrounding = surroundingRef.current;
+    const eyebrow = eyebrowRef.current;
+    const videoBg = videoBgRef.current;
+    if (!title || !surrounding) return;
 
-    // Calculate vertical offset from current title position to exact viewport center
+    // Scroll to top
+    window.scrollTo(0, 0);
+
+    // Calculate vertical distance to dead center of viewport
     const rect = title.getBoundingClientRect();
     const viewportCenterY = window.innerHeight / 2;
     const titleCenterY = rect.top + rect.height / 2;
     const deltaY = viewportCenterY - titleCenterY;
 
-    // Title starts at viewport center, blurred, wide letter spacing
+    // Initial state: Title starts in the exact center of screen, blurred and wide
     gsap.set(title, {
       y: deltaY,
-      filter: "blur(32px)",
+      filter: "blur(36px)",
       opacity: 0,
-      scale: 0.95,
+      scale: 0.94,
       letterSpacing: "0.35em",
     });
 
-    // Surrounding elements start slightly down and translucent
-    gsap.set(elements, {
-      opacity: 0,
-      y: 20,
-    });
+    // All other contents start hidden
+    if (eyebrow) gsap.set(eyebrow, { opacity: 0, y: -16 });
+    gsap.set(surrounding, { opacity: 0, y: 25 });
+    if (videoBg) gsap.set(videoBg, { opacity: 0 });
 
     const tl = gsap.timeline();
 
-    // Step 1: Text unblurs smoothly at viewport center
+    // 1. Text unblurs to crystal clear vision in center of screen
     tl.to(title, {
       opacity: 1,
       filter: "blur(0px)",
       scale: 1,
       letterSpacing: "0.14em",
-      duration: 1.4,
+      duration: 1.45,
       ease: "power3.out",
-      delay: 0.15,
+      delay: 0.2,
     })
-      // Step 2: Hold briefly for impact, then glide up to Hero position
+      // 2. Hold sharply in center for impact
+      .to({}, { duration: 0.35 })
+      // 3. Move smoothly up into Hero headline spot
       .to(title, {
         y: 0,
-        duration: 1.1,
+        duration: 1.15,
         ease: "power3.inOut",
-        delay: 0.25,
       })
-      // Step 3: Reveal surrounding elements in sync
+      // 4. Reveal surrounding Hero elements (eyebrow, subtitle, 3 cards, CTAs)
       .to(
-        elements,
+        [eyebrow, surrounding, videoBg],
         {
           opacity: 1,
           y: 0,
-          duration: 0.9,
+          duration: 0.85,
+          stagger: 0.1,
           ease: "power2.out",
+          onComplete: () => {
+            onIntroComplete?.();
+          },
         },
         "-=0.6"
       );
@@ -80,9 +95,9 @@ export default function HeroSection() {
     return () => {
       tl.kill();
     };
-  }, []);
+  }, [onIntroComplete]);
 
-  // ─── 2. Interactive White Star Canvas inside Hero ───────────────────────────
+  // ─── 2. Interactive White Star Particles Canvas ────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !containerRef.current) return;
@@ -216,7 +231,10 @@ export default function HeroSection() {
       className="relative min-h-screen flex flex-col justify-center items-center pt-32 pb-24 px-4 sm:px-6 md:px-12 bg-[#09080A] overflow-hidden"
     >
       {/* Background Chromatic Video Loop */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      <div
+        ref={videoBgRef}
+        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+      >
         <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-20 scale-105">
           <source src="/video/hero-bg.mp4" type="video/mp4" />
         </video>
@@ -230,10 +248,13 @@ export default function HeroSection() {
         className="absolute inset-0 w-full h-full pointer-events-none z-10"
       />
 
-      {/* ─── HERO CONTENT (Always mounted and visible) ─────────────────────────── */}
+      {/* ─── HERO CONTENT ──────────────────────────────────────────────────────── */}
       <div className="relative max-w-7xl mx-auto flex flex-col items-center text-center z-20 w-full">
         {/* Eyebrow Badge */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)]">
+        <div
+          ref={eyebrowRef}
+          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)]"
+        >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9780FF] opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9780FF]" />
@@ -245,7 +266,7 @@ export default function HeroSection() {
           <span className="font-mono text-[11px] text-[#FF7410]">PROTOTYPE TO SCALE</span>
         </div>
 
-        {/* Real Hero Headline – starts at center, unblurs and glides smoothly up */}
+        {/* Real Hero Headline – starts at dead center, unblurs and glides smoothly up */}
         <h1
           ref={titleRef}
           className="font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform"
@@ -258,8 +279,11 @@ export default function HeroSection() {
           COMMERCE AGENTS
         </h1>
 
-        {/* Surrounding Elements Container */}
-        <div ref={elementsRef} className="flex flex-col items-center w-full will-change-transform">
+        {/* Surrounding Elements Container – reveals after title moves up */}
+        <div
+          ref={surroundingRef}
+          className="flex flex-col items-center w-full will-change-transform"
+        >
           {/* Subtitle */}
           <p className="font-editorial text-xl sm:text-2xl text-zinc-300 font-light tracking-wide mt-5 mb-12 max-w-2xl">
             The 0→1 Product Design &amp; Autonomous Commerce Studio
