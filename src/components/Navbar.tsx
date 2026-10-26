@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Menu, X, Sparkle } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [chennaiTime, setChennaiTime] = useState("");
   const [scrolled, setScrolled] = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -47,7 +48,7 @@ export default function Navbar() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-4 px-4 sm:px-8 md:px-12 ${
-          scrolled ? "bg-[#09080A]/70 backdrop-blur-xl border-b border-white/5 py-3" : ""
+          scrolled ? "bg-[#09080A]/80 backdrop-blur-xl border-b border-white/5 py-3" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -66,31 +67,49 @@ export default function Navbar() {
                 COMMERCE AGENTS
               </span>
               <span className="font-mono text-[10px] text-zinc-500 tracking-wider">
-                PRODUCT & COMMERCE STUDIO
+                PRODUCT &amp; COMMERCE STUDIO
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-white/[0.03] border border-white/[0.08] px-4 py-1.5 rounded-full backdrop-blur-md">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="group relative px-4 py-1.5 text-xs font-medium text-zinc-400 hover:text-white transition-colors duration-200"
-              >
-                <span className="font-mono text-[9px] text-zinc-400 group-hover:text-[#9780FF] mr-1.5 transition-colors">
-                  {link.index}
-                </span>
-                <span>{link.label}</span>
-                <span className="absolute bottom-1 left-4 right-4 h-[1px] bg-gradient-to-r from-transparent via-[#9780FF] to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-              </a>
-            ))}
+          {/* Desktop Nav Links with Magnetic Sliding Hover Capsule */}
+          <nav
+            onMouseLeave={() => setHoveredIdx(null)}
+            className="hidden lg:flex items-center relative bg-white/[0.03] border border-white/[0.08] p-1 rounded-full backdrop-blur-md"
+          >
+            {navLinks.map((link, idx) => {
+              const isHovered = hoveredIdx === idx;
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onMouseEnter={() => setHoveredIdx(idx)}
+                  className="relative px-5 py-2 text-xs font-medium text-zinc-400 hover:text-white transition-colors duration-200 z-10 flex items-center gap-1.5 group"
+                >
+                  <span className="font-mono text-[10px] text-zinc-500 group-hover:text-[#9780FF] transition-colors">
+                    {link.index}
+                  </span>
+                  <span className="relative overflow-hidden inline-block">
+                    <span className="inline-block transition-transform duration-300 group-hover:-translate-y-full">
+                      {link.label}
+                    </span>
+                    <span className="absolute top-0 left-0 inline-block text-white transition-transform duration-300 translate-y-full group-hover:translate-y-0">
+                      {link.label}
+                    </span>
+                  </span>
+
+                  {/* Sliding pill background */}
+                  {isHovered && (
+                    <span className="absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.08] to-white/[0.04] border border-white/10 -z-10 shadow-[0_0_20px_rgba(151,128,255,0.15)] animate-in fade-in zoom-in-95 duration-200" />
+                  )}
+                </a>
+              );
+            })}
           </nav>
 
           {/* Right Area: Live Time + CTA */}
           <div className="hidden sm:flex items-center gap-4">
-            {/* Chennai Time Telemetry */}
+            {/* Chennai Time */}
             <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] text-[11px] font-mono text-zinc-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>CHENNAI</span>

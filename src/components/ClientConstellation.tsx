@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Sparkles, ExternalLink, Cpu, Layers, Activity } from "lucide-react";
+import { Sparkles, ExternalLink, Cpu, ShoppingBag, Utensils, Zap, Activity } from "lucide-react";
 
 interface ClientItem {
   id: string;
@@ -12,35 +12,31 @@ interface ClientItem {
   logo: string;
   description: string;
   tag: string;
+  gradient: string;
 }
 
 const clients: ClientItem[] = [
   {
-    id: "parla",
-    name: "Parla Retail / NFM",
-    category: "ENTERPRISE RETAIL & KIOSK",
-    metric: "+31% CONVERSION LIFT",
-    logo: "/clients/parla-norm.webp",
-    description: "In-store digital kiosk checkout, personalized product configurator, and multi-store inventory sync for Nebraska Furniture Mart.",
-    tag: "KIOSK COMMERCE",
+    id: "irasus",
+    name: "iRasus Technologies",
+    category: "EV BATTERY TELEMETRY & IOT",
+    metric: "3-TIER HEALTH TRIAGE",
+    logo: "/clients/irasus-norm.webp",
+    description:
+      "Enterprise IoT telemetry dashboard for electric vehicle battery packs. Real-time CAN bus telemetry, thermal runaway early warning detection, and automated fleet warranty monitoring.",
+    tag: "HARDWARE TELEMETRY",
+    gradient: "from-[#00F0FF]/15 via-transparent to-transparent",
   },
   {
     id: "wetwopets",
     name: "We Two Pets",
-    category: "0→1 E-COMMERCE ENGINE",
+    category: "0→1 D2C PET COMMERCE",
     metric: "ZERO-TO-ONE ARCHITECTURE",
     logo: "/clients/wetwopets-norm.webp",
-    description: "Curated pet commerce, nutrition matching algorithm, automated recurring subscriptions, and seamless checkout experience.",
+    description:
+      "Curated premium pet nutrition commerce platform. Built with intelligent breed/weight matching algorithms, automated recurring subscriptions, and seamless zero-latency cart checkout.",
     tag: "D2C COMMERCE",
-  },
-  {
-    id: "irasus",
-    name: "iRasus Technologies",
-    category: "EV BATTERY TELEMETRY",
-    metric: "3-TIER HEALTH TRIAGE",
-    logo: "/clients/irasus-norm.webp",
-    description: "Real-time battery pack diagnostics, thermal runaway early warning system, and automated fleet warranty monitoring.",
-    tag: "HARDWARE IOT",
+    gradient: "from-[#FF7410]/15 via-transparent to-transparent",
   },
   {
     id: "makeon",
@@ -48,26 +44,21 @@ const clients: ClientItem[] = [
     category: "MODULAR HARDWARE E-STORE",
     metric: "1,200+ PACKS SHIPPED",
     logo: "/clients/makeon-norm.webp",
-    description: "Wearable and adhesive circuit components e-commerce platform with interactive assembly guides for STEM learners worldwide.",
+    description:
+      "E-commerce storefront and interactive project build loops for adhesive, wearable electronics and STEM circuit components shipped worldwide.",
     tag: "HARDWARE RETAIL",
+    gradient: "from-[#9780FF]/15 via-transparent to-transparent",
   },
   {
-    id: "intellemo",
-    name: "Intellemo AI",
-    category: "SaaS CAMPAIGN PLATFORM",
-    metric: "3X AD VELOCITY",
-    logo: "/clients/intellemo-norm.png",
-    description: "AI-driven automated marketing launchpad with instant design generation and multi-channel campaign dispatch.",
-    tag: "AI PLATFORM",
-  },
-  {
-    id: "nfm",
-    name: "Nebraska Furniture Mart",
-    category: "OMNICHANNEL COMMERCE",
-    metric: "-26% CART ABANDONMENT",
-    logo: "/clients/nfm-norm.webp",
-    description: "Enterprise consultation scheduling and augmented reality spatial planner for America's largest home furnishing showrooms.",
-    tag: "ENTERPRISE",
+    id: "vidyas-kitchen",
+    name: "Vidya's Kitchen",
+    category: "0→1 FOOD DELIVERY PWA & BOT",
+    metric: "SUB-SECOND KITCHEN SYNC",
+    logo: "/clients/vidyas-kitchen.webp",
+    description:
+      "Hyperlocal food ordering PWA paired with an automated WhatsApp dispatch bot and live kitchen order management board, eliminating food aggregator commission overhead.",
+    tag: "FOOD ENGINE PWA",
+    gradient: "from-[#10B981]/15 via-transparent to-transparent",
   },
 ];
 
@@ -85,24 +76,24 @@ export default function ClientConstellation() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono text-[#9780FF] mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[#FF7410]" />
-              <span>[01] SELECTED ENGAGEMENTS</span>
+              <span>[01] VERIFIED CLIENT ENGAGEMENTS</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-light tracking-tight text-white">
-              ENGINEERED FOR <br />
-              <span className="font-editorial text-[#9780FF]">Pioneering</span> ENTERPRISES &amp; BRANDS.
+              SYSTEMS WE'VE <br />
+              <span className="font-editorial text-[#9780FF]">Architected</span> &amp; DEPLOYED.
             </h2>
           </div>
 
           <div className="max-w-md">
             <p className="text-sm text-zinc-400 font-light leading-relaxed">
-              From hardware IoT telemetry to custom D2C commerce pipelines, we partner with
-              founders and enterprise leaders to deliver high-converting, resilient digital systems.
+              We focus on high-stakes platforms: 0→1 headless commerce engines, hardware telemetry streams,
+              and custom food &amp; retail software engineered for direct operational efficiency.
             </p>
           </div>
         </div>
 
-        {/* Client Constellation Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* 4 Client Cards Grid with Full-Color Real Logos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {clients.map((client) => {
             const isHovered = hoveredClient === client.id;
             return (
@@ -110,80 +101,88 @@ export default function ClientConstellation() {
                 key={client.id}
                 onMouseEnter={() => setHoveredClient(client.id)}
                 onMouseLeave={() => setHoveredClient(null)}
-                className={`relative group rounded-2xl p-6 transition-all duration-500 overflow-hidden border ${
+                className={`relative group rounded-3xl p-8 transition-all duration-500 overflow-hidden border ${
                   isHovered
-                    ? "border-[#9780FF]/40 bg-[#121016]/90 shadow-[0_0_40px_-10px_rgba(151,128,255,0.2)] -translate-y-1"
-                    : "border-white/[0.08] bg-[#0E0D11]/60 hover:border-white/20"
+                    ? "border-[#9780FF]/40 bg-[#121016]/95 shadow-[0_0_50px_-15px_rgba(151,128,255,0.25)] -translate-y-1"
+                    : "border-white/[0.08] bg-[#0E0D11]/80 hover:border-white/20"
                 }`}
               >
-                {/* Pixel shimmer backdrop */}
+                {/* Subtle gradient backdrop */}
                 <div
-                  className={`absolute inset-0 pixel-grid-dense transition-opacity duration-500 pointer-events-none ${
-                    isHovered ? "opacity-40" : "opacity-0"
+                  className={`absolute inset-0 bg-gradient-to-br ${client.gradient} pointer-events-none transition-opacity duration-500 ${
+                    isHovered ? "opacity-100" : "opacity-40"
                   }`}
                 />
 
-                {/* Top Card Meta: Category + Live Ping */}
-                <div className="flex items-center justify-between mb-6 relative z-10">
-                  <span className="text-[10px] font-mono tracking-wider uppercase text-zinc-500">
+                {/* Pixel grid highlight */}
+                <div
+                  className={`absolute inset-0 pixel-grid-dense transition-opacity duration-500 pointer-events-none ${
+                    isHovered ? "opacity-30" : "opacity-0"
+                  }`}
+                />
+
+                {/* Top Meta: Category + Live Ping */}
+                <div className="flex items-center justify-between mb-8 relative z-10">
+                  <span className="text-[11px] font-mono tracking-wider uppercase text-zinc-400">
                     {client.category}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/5 text-[9px] font-mono text-zinc-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono text-zinc-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span>{client.tag}</span>
                   </span>
                 </div>
 
-                {/* Client Logo Showcase with Pixel Accent */}
-                <div className="relative h-20 w-full flex items-center justify-start mb-6">
-                  <div className="relative w-44 h-14 transition-transform duration-300 group-hover:scale-105">
+                {/* Real Full-Color Client Logo (High Visibility) */}
+                <div className="relative h-24 w-full flex items-center justify-start mb-6 p-3 rounded-2xl bg-white/[0.02] border border-white/5">
+                  <div className="relative w-52 h-16 transition-transform duration-300 group-hover:scale-105">
                     <Image
                       src={client.logo}
                       alt={client.name}
                       fill
-                      className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 brightness-125"
+                      className="object-contain object-left drop-shadow-md"
+                      priority
                     />
                   </div>
                 </div>
 
                 {/* Client Name & Metric */}
-                <div className="relative z-10 mb-3">
-                  <h3 className="text-xl font-medium text-white mb-1 group-hover:text-[#9780FF] transition-colors">
+                <div className="relative z-10 mb-4">
+                  <h3 className="text-2xl font-light text-white mb-2 group-hover:text-[#9780FF] transition-colors">
                     {client.name}
                   </h3>
-                  <div className="inline-block px-2.5 py-1 rounded bg-[#9780FF]/10 border border-[#9780FF]/20 text-xs font-mono text-[#00F0FF]">
+                  <div className="inline-block px-3 py-1 rounded-full bg-[#9780FF]/10 border border-[#9780FF]/25 text-xs font-mono text-[#00F0FF]">
                     {client.metric}
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-xs text-zinc-400 leading-relaxed font-light relative z-10">
+                <p className="text-sm text-zinc-300 leading-relaxed font-light relative z-10 mb-6">
                   {client.description}
                 </p>
 
                 {/* Bottom interactive edge */}
-                <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-zinc-500 relative z-10">
-                  <span>COMMERCE_AGENTS // PRODUCTION</span>
-                  <Activity className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#FF7410] transition-colors" />
+                <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-zinc-500 relative z-10">
+                  <span>PRODUCTION ARCHITECTURE // DEPLOYED</span>
+                  <Activity className="w-4 h-4 text-zinc-400 group-hover:text-[#FF7410] transition-colors" />
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Studio Note Banner */}
+        {/* Direct Studio Launch Callout */}
         <div className="mt-12 rounded-2xl p-6 border border-white/[0.08] bg-white/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#FF7410] animate-ping" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#9780FF] animate-ping" />
             <span className="text-xs font-mono text-zinc-300">
-              FEATURED COMMERCE LAUNCH: VIDYA'S KITCHEN 0→1 FOOD ENGINE &amp; WHATSAPP BOARD
+              FEATURED ZERO-COMMISSION STACK: VIDYA'S KITCHEN 0→1 WHATSAPP BOT &amp; PWA
             </span>
           </div>
           <a
             href="#contact"
             className="text-xs font-mono text-[#9780FF] hover:text-[#b09eff] flex items-center gap-1.5 transition-colors"
           >
-            <span>INQUIRE ABOUT CUSTOM COMMERCE ARCHITECTURE</span>
+            <span>COMMISSION A TAILORED ENGINE</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>

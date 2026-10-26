@@ -1,55 +1,57 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import dynamic from "next/dynamic";
+import lottie from "lottie-web";
 import gsap from "gsap";
-
-const Lottie = dynamic(
-  () => import("lottie-react").then((mod: any) => mod.default || mod.Lottie || mod),
-  { ssr: false }
-) as any;
 
 interface PreloaderProps {
   onComplete?: () => void;
 }
 
 export default function Preloader({ onComplete }: PreloaderProps) {
-  const [animationData, setAnimationData] = useState<any>(null);
   const [progress, setProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const preloaderRef = useRef<HTMLDivElement>(null);
-  const lottieWrapRef = useRef<HTMLDivElement>(null);
+  const lottieContainerRef = useRef<HTMLDivElement>(null);
   const telemetryRef = useRef<HTMLDivElement>(null);
   const percentRef = useRef<HTMLDivElement>(null);
+  const animInstance = useRef<any>(null);
 
-  // Load Lottie JSON client-side
+  // Initialize Lottie with lottie-web directly
   useEffect(() => {
-    fetch("/lottie/preloader.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setAnimationData(data);
-      })
-      .catch((err) => {
-        console.warn("Lottie preloader fallback:", err);
-      });
+    if (!lottieContainerRef.current) return;
+
+    animInstance.current = lottie.loadAnimation({
+      container: lottieContainerRef.current,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      path: "/lottie/preloader.json",
+    });
+
+    return () => {
+      if (animInstance.current) {
+        animInstance.current.destroy();
+      }
+    };
   }, []);
 
   // Progress counter simulation & timeline
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
-      current += Math.floor(Math.random() * 4) + 2;
+      current += Math.floor(Math.random() * 5) + 3;
       if (current >= 100) {
         current = 100;
         clearInterval(interval);
         setProgress(100);
         setTimeout(() => {
           finishIntro();
-        }, 500);
+        }, 400);
       } else {
         setProgress(current);
       }
-    }, 45);
+    }, 40);
 
     return () => clearInterval(interval);
   }, []);
@@ -67,10 +69,10 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       },
     });
 
-    tl.to(lottieWrapRef.current, {
+    tl.to(lottieContainerRef.current, {
       scale: 1.15,
       opacity: 0,
-      duration: 0.6,
+      duration: 0.5,
       ease: "power2.inOut",
     })
       .to(
@@ -78,16 +80,16 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         {
           opacity: 0,
           y: -10,
-          duration: 0.4,
+          duration: 0.35,
           ease: "power2.out",
         },
-        "-=0.4"
+        "-=0.3"
       )
       .to(
         preloaderRef.current,
         {
           yPercent: -100,
-          duration: 0.85,
+          duration: 0.8,
           ease: "expo.inOut",
         },
         "-=0.1"
@@ -121,23 +123,13 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       {/* Center Lottie animation + ambient glow */}
       <div className="relative flex flex-col items-center justify-center my-auto">
         {/* Ambient radial blur behind Lottie */}
-        <div className="absolute w-72 h-72 md:w-96 md:h-96 rounded-full bg-gradient-to-tr from-[#9780FF]/20 via-[#FF7410]/15 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute w-72 h-72 md:w-96 md:h-96 rounded-full bg-gradient-to-tr from-[#9780FF]/25 via-[#FF7410]/15 to-transparent blur-3xl pointer-events-none" />
 
+        {/* Lottie SVG container */}
         <div
-          ref={lottieWrapRef}
+          ref={lottieContainerRef}
           className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 flex items-center justify-center"
-        >
-          {animationData ? (
-            <Lottie
-              animationData={animationData}
-              loop={true}
-              autoplay={true}
-              className="w-full h-full"
-            />
-          ) : (
-            <div className="w-16 h-16 border-2 border-[#9780FF]/30 border-t-[#9780FF] rounded-full animate-spin" />
-          )}
-        </div>
+        />
 
         {/* Counter Percentage with pixelated mono styling */}
         <div

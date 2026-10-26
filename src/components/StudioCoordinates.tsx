@@ -1,27 +1,44 @@
 "use client";
 
 import React, { useState } from "react";
-import { MapPin, Mail, Clock, ArrowUpRight, Check, Send, Terminal, Building2 } from "lucide-react";
+import { MapPin, Mail, Clock, ArrowUpRight, Check, Send, Terminal, Building2, Loader2 } from "lucide-react";
 
 export default function StudioCoordinates() {
   const [formState, setFormState] = useState({
     name: "",
     email: "",
-    projectType: "0→1 Commerce Engine",
-    budget: "$5k - $15k",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    // construct mailto fallback
-    const subject = encodeURIComponent(`[Commission Request] ${formState.projectType} - ${formState.name}`);
-    const body = encodeURIComponent(
-      `Name: ${formState.name}\nEmail: ${formState.email}\nProject Type: ${formState.projectType}\nBudget: ${formState.budget}\n\nProject Scope:\n${formState.message}`
-    );
-    window.location.href = `mailto:santhoshdesignstudio@gmail.com?subject=${subject}&body=${body}`;
+    setIsSubmitting(true);
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formState),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const err = await res.json();
+        setErrorMsg(err.error || "Failed to submit. Please email us directly.");
+      }
+    } catch (err) {
+      console.warn("Contact submission error, falling back to mailto:", err);
+      // Fallback
+      setSubmitted(true);
+      window.location.href = `mailto:santhoshdesignstudio@gmail.com?subject=Commission Request from ${encodeURIComponent(formState.name)}&body=${encodeURIComponent(formState.message)}`;
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -41,8 +58,8 @@ export default function StudioCoordinates() {
           </div>
 
           <p className="max-w-md text-sm text-zinc-400 font-light leading-relaxed">
-            Ready to deploy an autonomous commerce platform or hardware dashboard? Send us your
-            specs. We respond within 24 hours from our Chennai studio.
+            Ready to deploy an autonomous commerce platform or hardware dashboard? Reach out directly
+            to our Chennai studio. Co-Founder Santhosh A reviews and responds within 24 hours.
           </p>
         </div>
 
@@ -82,10 +99,10 @@ export default function StudioCoordinates() {
                 </div>
 
                 <div className="flex items-center gap-3 pt-2">
-                  <Mail className="w-4 h-4 text-zinc-400 shrink-0" />
+                  <Mail className="w-4 h-4 text-[#9780FF] shrink-0" />
                   <a
                     href="mailto:santhoshdesignstudio@gmail.com"
-                    className="text-[#9780FF] hover:underline font-mono"
+                    className="text-[#9780FF] hover:underline font-mono text-xs"
                   >
                     santhoshdesignstudio@gmail.com
                   </a>
@@ -100,9 +117,9 @@ export default function StudioCoordinates() {
             </div>
 
             {/* Direct co-founder note */}
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-zinc-400 leading-relaxed font-light">
-              <span className="text-white font-medium">Sprint Availability:</span> Currently accepting 2
-              dedicated 0→1 builds for Q4. Direct engineering and design execution by Co-Founder Santhosh A.
+            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-zinc-300 leading-relaxed font-light">
+              <span className="text-white font-medium">Direct Founder Access:</span> All commissions are
+              architected and designed directly by <span className="text-[#9780FF]">Santhosh A</span>. No agency middlemen or outsourced handoffs.
             </div>
           </div>
 
@@ -113,31 +130,48 @@ export default function StudioCoordinates() {
                 <div className="flex items-center gap-2">
                   <Terminal className="w-4 h-4 text-[#9780FF]" />
                   <span className="font-mono text-xs text-zinc-300">
-                    TERMINAL // INITIATE_PROJECT_PROPOSAL
+                    TRANSMISSION // INITIATE_COMMISSION
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-zinc-500">[SECURE DISPATCH]</span>
+                <a
+                  href="mailto:santhoshdesignstudio@gmail.com"
+                  className="text-[11px] font-mono text-[#9780FF] hover:underline"
+                >
+                  santhoshdesignstudio@gmail.com
+                </a>
               </div>
 
               {submitted ? (
                 <div className="py-16 text-center flex flex-col items-center">
-                  <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
-                    <Check className="w-7 h-7" />
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4 animate-in zoom-in-95">
+                    <Check className="w-8 h-8" />
                   </div>
-                  <h4 className="text-2xl font-light text-white mb-2">Proposal Initiated</h4>
-                  <p className="text-xs text-zinc-400 max-w-sm mb-6">
-                    Your specs have been queued for review by Co-Founder Santhosh A. We will review
-                    and reply via email within 24 hours.
+                  <h4 className="text-2xl font-light text-white mb-2">Transmission Dispatched</h4>
+                  <p className="text-xs text-zinc-300 max-w-sm mb-4 leading-relaxed">
+                    Your message has been received by Co-Founder Santhosh A. We will review your project
+                    and reply directly to <span className="text-[#9780FF]">{formState.email}</span> within 24 hours.
+                  </p>
+                  <p className="text-[11px] font-mono text-zinc-500 mb-6">
+                    DISPATCH DESTINATION: santhoshdesignstudio@gmail.com
                   </p>
                   <button
-                    onClick={() => setSubmitted(false)}
+                    onClick={() => {
+                      setSubmitted(false);
+                      setFormState({ name: "", email: "", message: "" });
+                    }}
                     className="text-xs font-mono text-[#9780FF] hover:underline"
                   >
-                    Submit another inquiry
+                    Send another message
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {errorMsg && (
+                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono">
+                      {errorMsg}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-2">
@@ -148,7 +182,7 @@ export default function StudioCoordinates() {
                         required
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                        placeholder="e.g. Elena Vance / Venture Labs"
+                        placeholder="e.g. Elena Vance"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 focus:border-[#9780FF] focus:outline-none text-white text-xs placeholder:text-zinc-600 transition-colors"
                       />
                     </div>
@@ -168,61 +202,36 @@ export default function StudioCoordinates() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-2">
-                        Project Scope
-                      </label>
-                      <select
-                        value={formState.projectType}
-                        onChange={(e) => setFormState({ ...formState, projectType: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#141218] border border-white/10 focus:border-[#9780FF] focus:outline-none text-white text-xs transition-colors"
-                      >
-                        <option value="0→1 Commerce Engine">0→1 Headless Commerce Engine</option>
-                        <option value="In-Store Kiosk App">In-Store Kiosk &amp; Omnichannel App</option>
-                        <option value="IoT Hardware Dashboard">Hardware / EV Telemetry Dashboard</option>
-                        <option value="Custom PWA & Bot">Custom Food / Pet Delivery PWA</option>
-                        <option value="Design Engineering Sprint">Design Engineering &amp; Motion Sprint</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-2">
-                        Estimated Budget
-                      </label>
-                      <select
-                        value={formState.budget}
-                        onChange={(e) => setFormState({ ...formState, budget: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-[#141218] border border-white/10 focus:border-[#9780FF] focus:outline-none text-white text-xs transition-colors"
-                      >
-                        <option value="< $5,000">&lt; $5,000 (Rapid Sprint)</option>
-                        <option value="$5,000 - $15,000">$5,000 - $15,000 (MVP Launch)</option>
-                        <option value="$15,000 - $35,000">$15,000 - $35,000 (Full Production Engine)</option>
-                        <option value="$35,000+">$35,000+ (Enterprise Multi-Platform)</option>
-                      </select>
-                    </div>
-                  </div>
-
                   <div>
                     <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-2">
-                      Project Vision &amp; Deliverables
+                      Project Vision &amp; Deliverables *
                     </label>
                     <textarea
-                      rows={4}
+                      rows={5}
                       required
                       value={formState.message}
                       onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                      placeholder="Tell us what you are building, timeline expectations, or links to references..."
+                      placeholder="Describe what you are building (0→1 commerce engine, hardware dashboard, custom PWA), timeline expectations, or links to references..."
                       className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/10 focus:border-[#9780FF] focus:outline-none text-white text-xs placeholder:text-zinc-600 transition-colors resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-[#9780FF] via-[#FF7410] to-[#00F0FF] text-white font-semibold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:opacity-95 transition-opacity duration-300 shadow-[0_0_25px_rgba(151,128,255,0.3)]"
+                    disabled={isSubmitting}
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-[#9780FF] via-[#FF7410] to-[#00F0FF] text-white font-semibold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:opacity-95 transition-opacity duration-300 shadow-[0_0_25px_rgba(151,128,255,0.3)] disabled:opacity-50"
                   >
-                    <span>TRANSMIT COMMISSION REQUEST</span>
-                    <Send className="w-3.5 h-3.5" />
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>DISPATCHING TRANSMISSION...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>TRANSMIT COMMISSION REQUEST</span>
+                        <Send className="w-3.5 h-3.5" />
+                      </>
+                    )}
                   </button>
                 </form>
               )}
