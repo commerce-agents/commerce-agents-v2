@@ -8,32 +8,31 @@ export default function Footer() {
   const containerRef = useRef<HTMLElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
 
-  // ─── Cybernetic Pixel Matrix Canvas (Black to Glowing Gradient Boxes) ───────
+  // ─── High-Performance Cybernetic Pixel Matrix Canvas (60+ FPS) ─────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     let raf: number;
-    const BOX_SIZE = 22;
+    const BOX_SIZE = 20;
     const GAP = 4;
     const CELL_SIZE = BOX_SIZE + GAP;
 
     let cols = 0;
     let rows = 0;
 
-    // Palette of bright neon gradients for the pixel boxes
     const colorPalettes = [
-      { start: "#9780FF", end: "#7322F2" }, // Ultraviolet
-      { start: "#00F0FF", end: "#3B82F6" }, // Electric Cyan
-      { start: "#FF7410", end: "#F43F5E" }, // Radiant Amber / Coral
-      { start: "#A855F7", end: "#EC4899" }, // Neon Magenta
+      { start: "#9780FF", end: "#7322F2" },
+      { start: "#00F0FF", end: "#2563EB" },
+      { start: "#FF7410", end: "#E11D48" },
+      { start: "#C084FC", end: "#9333EA" },
     ];
 
     interface PixelCell {
-      alpha: number; // 0 (black/off) to 1 (full bright gradient)
+      alpha: number;
       targetAlpha: number;
       palette: { start: string; end: string };
       decaySpeed: number;
@@ -56,8 +55,8 @@ export default function Footer() {
           row.push({
             alpha: 0,
             targetAlpha: 0,
-            palette: colorPalettes[Math.floor(Math.random() * colorPalettes.length)],
-            decaySpeed: 0.01 + Math.random() * 0.02,
+            palette: colorPalettes[(r + c) % colorPalettes.length],
+            decaySpeed: 0.015 + Math.random() * 0.02,
           });
         }
         grid.push(row);
@@ -65,7 +64,7 @@ export default function Footer() {
     };
 
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", resize, { passive: true });
 
     const onMouseMove = (e: MouseEvent) => {
       if (!container) return;
@@ -73,7 +72,7 @@ export default function Footer() {
       mouseRef.current.x = e.clientX - rect.left;
       mouseRef.current.y = e.clientY - rect.top;
     };
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
 
     let frameCount = 0;
 
@@ -84,22 +83,20 @@ export default function Footer() {
 
       frameCount++;
 
-      // Randomly ignite 4-6 random pixel cubes from black to glowing gradient boxes
-      if (frameCount % 2 === 0 && rows > 0 && cols > 0) {
-        for (let k = 0; k < 5; k++) {
-          // Focus random ignitions in the lower 70% where the wordmark & gradient live
-          const startRow = Math.floor(rows * 0.3);
+      // Ignite random pixel cubes from black into vivid gradient boxes
+      if (frameCount % 3 === 0 && rows > 0 && cols > 0) {
+        for (let k = 0; k < 4; k++) {
+          const startRow = Math.floor(rows * 0.25);
           const r = startRow + Math.floor(Math.random() * (rows - startRow));
           const c = Math.floor(Math.random() * cols);
 
           if (grid[r] && grid[r][c] && grid[r][c].alpha < 0.1) {
-            grid[r][c].targetAlpha = 0.65 + Math.random() * 0.35;
-            grid[r][c].palette = colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
+            grid[r][c].targetAlpha = 0.75 + Math.random() * 0.25;
           }
         }
       }
 
-      // Mouse proximity interaction: ignite cubes under cursor
+      // Mouse proximity interaction
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
       if (mx > 0 && my > 0) {
@@ -112,61 +109,52 @@ export default function Footer() {
             if (grid[r] && grid[r][c]) {
               const d = Math.sqrt((r - centerRow) ** 2 + (c - centerCol) ** 2);
               if (d <= radius) {
-                grid[r][c].targetAlpha = Math.max(grid[r][c].targetAlpha, (1 - d / radius) * 0.9);
+                grid[r][c].targetAlpha = Math.max(grid[r][c].targetAlpha, (1 - d / radius) * 0.95);
               }
             }
           }
         }
       }
 
-      // Draw all pixel cubes
+      // Render active cubes with fast GPU fills (no slow shadowBlur in render loop)
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const cell = grid[r][c];
           if (!cell) continue;
 
-          // Smoothly approach targetAlpha, then decay back to dark/off
           if (cell.targetAlpha > cell.alpha) {
-            cell.alpha += (cell.targetAlpha - cell.alpha) * 0.25;
+            cell.alpha += (cell.targetAlpha - cell.alpha) * 0.3;
             if (cell.alpha >= cell.targetAlpha - 0.05) {
-              cell.targetAlpha = 0; // begin fading out
+              cell.targetAlpha = 0;
             }
-          } else {
+          } else if (cell.alpha > 0) {
             cell.alpha = Math.max(0, cell.alpha - cell.decaySpeed);
           }
 
           const x = c * CELL_SIZE;
           const y = r * CELL_SIZE;
 
-          // Draw resting subtle dark border box
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.025)";
+          // Static subtle grid box
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
           ctx.lineWidth = 1;
           ctx.strokeRect(x, y, BOX_SIZE, BOX_SIZE);
 
-          // If cell is active, draw glowing gradient box!
-          if (cell.alpha > 0.02) {
+          // Active glowing gradient box
+          if (cell.alpha > 0.03) {
             ctx.save();
             ctx.globalAlpha = cell.alpha;
 
-            // Gradient fill from top-left to bottom-right
             const grad = ctx.createLinearGradient(x, y, x + BOX_SIZE, y + BOX_SIZE);
             grad.addColorStop(0, cell.palette.start);
             grad.addColorStop(1, cell.palette.end);
 
             ctx.fillStyle = grad;
-            ctx.shadowColor = cell.palette.start;
-            ctx.shadowBlur = 12 * cell.alpha;
+            ctx.fillRect(x, y, BOX_SIZE, BOX_SIZE);
 
-            // Rounded rectangle box
-            const rad = 3;
-            ctx.beginPath();
-            ctx.roundRect(x, y, BOX_SIZE, BOX_SIZE, rad);
-            ctx.fill();
-
-            // Inner bright specular highlight on the box
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+            // Crisp specular highlight edge
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
             ctx.lineWidth = 1;
-            ctx.stroke();
+            ctx.strokeRect(x, y, BOX_SIZE, BOX_SIZE);
 
             ctx.restore();
           }
@@ -192,24 +180,22 @@ export default function Footer() {
       className="relative bg-[#07060A] pt-32 pb-12 overflow-hidden border-t border-white/[0.06]"
     >
       {/* ── 1. Intense, Vivid Multi-Color Glowing Horizon Gradient ───────────── */}
-      {/* Ultra-saturated Electric Purple & Cyan & Coral glow blooming from bottom edge */}
       <div
         className="absolute inset-x-0 bottom-0 pointer-events-none"
         style={{
-          height: 520,
+          height: 540,
           background:
-            "radial-gradient(ellipse 140% 100% at 50% 100%, rgba(115, 34, 242, 0.85) 0%, rgba(151, 128, 255, 0.6) 28%, rgba(0, 240, 255, 0.35) 50%, rgba(255, 116, 16, 0.25) 70%, transparent 95%)",
+            "radial-gradient(ellipse 140% 100% at 50% 100%, rgba(115, 34, 242, 0.9) 0%, rgba(151, 128, 255, 0.65) 28%, rgba(0, 240, 255, 0.4) 50%, rgba(255, 116, 16, 0.28) 70%, transparent 95%)",
           filter: "blur(60px)",
         }}
       />
 
-      {/* Secondary Cyan/Magenta volumetric flare */}
       <div
         className="absolute inset-x-0 bottom-0 pointer-events-none"
         style={{
-          height: 340,
+          height: 360,
           background:
-            "radial-gradient(circle at 35% 100%, rgba(0, 240, 255, 0.4) 0%, transparent 55%), radial-gradient(circle at 65% 100%, rgba(255, 116, 16, 0.35) 0%, transparent 55%)",
+            "radial-gradient(circle at 35% 100%, rgba(0, 240, 255, 0.45) 0%, transparent 55%), radial-gradient(circle at 65% 100%, rgba(255, 116, 16, 0.4) 0%, transparent 55%)",
           filter: "blur(50px)",
         }}
       />
@@ -222,7 +208,7 @@ export default function Footer() {
 
       {/* ── 3. TOP SECTION: Direct Inquiries & Sprint Commission (Wide & Spaced) ── */}
       <div className="relative z-20 max-w-[1560px] mx-auto px-6 sm:px-12 md:px-20 flex flex-col lg:flex-row items-start lg:items-end justify-between gap-16 lg:gap-36 mb-36 sm:mb-44">
-        {/* Left: Email in one single clean line with generous breathing room */}
+        {/* Left: Email in one single clean line */}
         <div className="min-w-0 flex-1">
           <p className="font-mono text-xs uppercase tracking-widest text-[#9780FF] mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
