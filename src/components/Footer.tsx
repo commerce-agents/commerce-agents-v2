@@ -1,111 +1,148 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import React, { useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
+
+// Each blob has its own random animation path
+function AnimatedBlob({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const el = ref.current;
+
+    let x = 0, y = 0;
+    let tx = (Math.random() - 0.5) * 120;
+    let ty = (Math.random() - 0.5) * 80;
+    let vx = (Math.random() - 0.5) * 0.4;
+    let vy = (Math.random() - 0.5) * 0.4;
+    let raf: number;
+
+    const speed = 0.008 + Math.random() * 0.012;
+
+    const tick = () => {
+      tx += vx;
+      ty += vy;
+      // bounce softly within bounds
+      if (Math.abs(tx) > 120) vx *= -1;
+      if (Math.abs(ty) > 80) vy *= -1;
+
+      x += (tx - x) * speed;
+      y += (ty - y) * speed;
+
+      el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return <div ref={ref} className={className} style={{ position: "absolute", willChange: "transform", ...style }} />;
+}
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#070609] pt-28 pb-12 px-6 sm:px-10 md:px-16 overflow-hidden border-t border-white/5">
-      {/* Top Section: Email & CTA Box (Exact Superconscious Layout) */}
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-10 mb-20">
-        {/* Left: Live Limitless + Massive Email */}
-        <div className="flex flex-col">
-          <span className="font-mono text-xs uppercase tracking-wider text-zinc-400 mb-3">
-            Live Limitless // Chennai Studio
-          </span>
+    <footer className="relative bg-[#060509] pt-20 pb-10 px-6 sm:px-10 md:px-16 overflow-hidden border-t border-white/[0.06]">
+
+      {/* ── TOP ROW: Email (left) + CTA (right) ───────────────────── */}
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-10 mb-16">
+        {/* Left */}
+        <div>
+          <p className="font-light text-zinc-400 text-sm mb-3 tracking-wide">Let's Build Something Radical</p>
           <a
             href="mailto:santhoshdesignstudio@gmail.com"
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white tracking-tight hover:text-[#9780FF] transition-colors duration-300"
+            className="block text-3xl sm:text-5xl md:text-[56px] font-light text-white tracking-tight leading-none hover:text-[#9780FF] transition-colors duration-300 break-all"
           >
-            santhoshdesignstudio@gmail.com
+            santhoshdesignstudio<span className="text-[#9780FF]">@</span>gmail.com
           </a>
         </div>
 
-        {/* Right: Upgrade Your Reality + White Button */}
-        <div className="flex flex-col items-start md:items-end text-left md:text-right shrink-0">
+        {/* Right – CTA box */}
+        <div className="shrink-0 flex flex-col items-start md:items-end">
           <h4 className="text-xl sm:text-2xl font-light text-white tracking-tight mb-1">
-            Upgrade Your Reality
+            Engineer Your Reality
           </h4>
-          <p className="text-xs text-zinc-400 font-light mb-6">
-            Commission a dedicated 0→1 build with Co-Founder Santhosh
+          <p className="text-xs text-zinc-400 font-light mb-6 md:text-right">
+            Commission a dedicated 0→1 build sprint with Santhosh A
           </p>
           <a
             href="#contact"
-            className="px-8 py-3.5 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-all duration-300 shadow-[0_0_25px_rgba(255,255,255,0.25)] flex items-center gap-2 group"
+            className="px-7 py-3 rounded-full bg-white text-black text-xs font-semibold hover:bg-zinc-100 transition-all duration-300 flex items-center gap-2 group shadow-[0_0_25px_rgba(255,255,255,0.2)]"
           >
             <span>Commission Sprint</span>
-            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </div>
       </div>
 
-      {/* Middle Section: Clean Horizontal Social Links (Exact Superconscious Row) */}
-      <div className="max-w-7xl mx-auto border-b border-white/10 pb-8 mb-16">
+      {/* ── LINKS ROW: Portfolio + LinkedIn only ──────────────────── */}
+      <div className="max-w-7xl mx-auto border-b border-white/10 pb-8 mb-0">
         <div className="flex flex-wrap items-center justify-between gap-6 text-sm text-zinc-300 font-light">
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
-          >
-            Instagram
+          <a href="https://designbysanthosh.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1.5">
+            Portfolio
+            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
           </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
-          >
-            Twitter X
-          </a>
-          <a
-            href="https://linkedin.com/in/santhosh-a-designer"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
-          >
+          <a href="https://linkedin.com/in/santhosh-a-designer" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
             LinkedIn
           </a>
-          <a
-            href="https://designbysanthosh.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#9780FF] hover:text-[#b09eff] transition-colors flex items-center gap-1 font-mono text-xs"
-          >
-            <span>designbysanthosh.com</span>
-            <ArrowUpRight className="w-3 h-3" />
+          <a href="mailto:santhoshdesignstudio@gmail.com" className="text-zinc-400 hover:text-white transition-colors">
+            santhoshdesignstudio@gmail.com
           </a>
+          <span className="font-mono text-xs text-zinc-500">CHENNAI, INDIA // 13.0604° N</span>
         </div>
       </div>
 
-      {/* Bottom Area: Massive Full-Width COMMERCE AGENTS Title with Volumetric Glowing Violet Blur */}
-      <div className="relative max-w-7xl mx-auto flex flex-col items-center justify-center my-6 overflow-hidden">
-        {/* Volumetric Purple/Violet Glowing Fog (Superconscious Signature) */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[85vw] max-w-5xl h-48 sm:h-64 rounded-full bg-gradient-to-r from-[#582CFF] via-[#9780FF] to-[#3B82F6] opacity-80 blur-[90px] mix-blend-screen" />
-        </div>
+      {/* ── MASSIVE WORDMARK + VOLUMETRIC ANIMATED BLOBS ─────────── */}
+      <div className="relative max-w-7xl mx-auto mt-0 pt-12 pb-6 flex flex-col items-center overflow-hidden">
+        {/* Moving animated blobs – pure random drift */}
+        <AnimatedBlob
+          className="w-[55vw] max-w-[700px] h-[240px] rounded-full"
+          style={{
+            left: "50%", top: "55%",
+            background: "radial-gradient(ellipse at center, #7C3AED 0%, #4F46E5 45%, #1E1B4B 100%)",
+            filter: "blur(72px)",
+            opacity: 0.92,
+            mixBlendMode: "screen",
+          }}
+        />
+        <AnimatedBlob
+          className="w-[30vw] max-w-[360px] h-[180px] rounded-full"
+          style={{
+            left: "35%", top: "40%",
+            background: "radial-gradient(ellipse at center, #9780FF 0%, #6D28D9 60%, transparent 100%)",
+            filter: "blur(55px)",
+            opacity: 0.75,
+            mixBlendMode: "screen",
+          }}
+        />
+        <AnimatedBlob
+          className="w-[20vw] max-w-[260px] h-[140px] rounded-full"
+          style={{
+            left: "65%", top: "45%",
+            background: "radial-gradient(ellipse at center, #2563EB 0%, #1D4ED8 60%, transparent 100%)",
+            filter: "blur(50px)",
+            opacity: 0.6,
+            mixBlendMode: "screen",
+          }}
+        />
 
-        {/* Massive Bold Edge-to-Edge Typography */}
-        <h2 className="relative z-10 text-[10.5vw] font-bold tracking-tighter text-white uppercase text-center leading-none select-none drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)]">
+        {/* Big wordmark */}
+        <h2
+          className="relative z-10 font-bold tracking-tighter text-white uppercase text-center leading-none select-none"
+          style={{ fontSize: "clamp(60px, 12vw, 160px)" }}
+        >
           COMMERCE AGENTS
         </h2>
       </div>
 
-      {/* Bottom Copyright & Legal Links */}
-      <div className="max-w-7xl mx-auto pt-10 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-light">
-        <div>
-          © 2026 Commerce Agents. All Rights Reserved.
-        </div>
-
-        <div className="flex items-center gap-6">
-          <a href="#studio" className="hover:text-zinc-300 transition-colors">
-            Chennai Studio [13.0604° N]
-          </a>
+      {/* ── BOTTOM BAR ────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto pt-8 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-zinc-600 font-mono">
+        <span>© 2026 Commerce Agents Studio. All Rights Reserved.</span>
+        <div className="flex items-center gap-5">
+          <span>Privacy policy</span>
           <span className="text-zinc-700">|</span>
-          <span className="text-zinc-500">Privacy policy</span>
-          <span className="text-zinc-700">|</span>
-          <span className="text-zinc-500">Terms and conditions</span>
+          <span>Terms and conditions</span>
         </div>
       </div>
     </footer>

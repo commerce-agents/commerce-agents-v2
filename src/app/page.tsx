@@ -5,7 +5,7 @@ import Preloader from "@/components/Preloader";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import PinnedTypographyScroll from "@/components/PinnedTypographyScroll";
+import ScrollRevealManifesto from "@/components/ScrollRevealManifesto";
 import ClientConstellation from "@/components/ClientConstellation";
 import CapabilitiesSection from "@/components/CapabilitiesSection";
 import CoFounderDossier from "@/components/CoFounderDossier";
@@ -17,14 +17,12 @@ export default function Home() {
 
   return (
     <SmoothScroll>
-      {/* Superconscious Geometric Intro Preloader */}
       <Preloader onComplete={() => setIntroFinished(true)} />
 
-      {/* Main Studio Experience */}
-      <main className="relative min-h-screen bg-[#09080A] text-[#F4F3F6] selection:bg-[#9780FF]/30 selection:text-[#00F0FF] overflow-hidden">
+      <main className="relative min-h-screen bg-[#09080A] text-[#F4F3F6] selection:bg-[#9780FF]/30 selection:text-[#00F0FF]">
         <Navbar />
         <HeroSection />
-        <PinnedTypographyScroll />
+        <ScrollRevealManifesto />
         <ClientConstellation />
         <CapabilitiesSection />
         <CoFounderDossier />
