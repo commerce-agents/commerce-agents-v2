@@ -14,7 +14,21 @@ export default function Preloader({ onReveal, onComplete }: PreloaderProps) {
   const glowRef = useRef<HTMLDivElement>(null);
   const [isDone, setIsDone] = useState(false);
 
+  // Store callbacks in mutable refs so re-renders never re-trigger the animation
+  const onRevealRef = useRef(onReveal);
+  const onCompleteRef = useRef(onComplete);
+  const hasStartedRef = useRef(false);
+
   useEffect(() => {
+    onRevealRef.current = onReveal;
+    onCompleteRef.current = onComplete;
+  }, [onReveal, onComplete]);
+
+  useEffect(() => {
+    // Strictly execute only once across the entire lifecycle
+    if (hasStartedRef.current) return;
+    hasStartedRef.current = true;
+
     const container = containerRef.current;
     const text = textRef.current;
     const glow = glowRef.current;
@@ -97,7 +111,7 @@ export default function Preloader({ onReveal, onComplete }: PreloaderProps) {
 
     // ── STAGE 5: Black Curtain Dissolves & Content Reveals Smoothly (0.85s) ───
     tl.call(() => {
-      onReveal?.();
+      onRevealRef.current?.();
     });
 
     tl.to(container, {
@@ -109,7 +123,7 @@ export default function Preloader({ onReveal, onComplete }: PreloaderProps) {
     // ── STAGE 6: Clean Up & Unlock ───────────────────────────────────────────
     tl.call(() => {
       document.body.style.overflow = "";
-      onComplete?.();
+      onCompleteRef.current?.();
       setTimeout(() => {
         setIsDone(true);
       }, 50);
@@ -119,7 +133,7 @@ export default function Preloader({ onReveal, onComplete }: PreloaderProps) {
       document.body.style.overflow = "";
       tl.kill();
     };
-  }, [onReveal, onComplete]);
+  }, []); // Run strictly ONCE on mount
 
   if (isDone) return null;
 
