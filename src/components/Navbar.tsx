@@ -47,7 +47,6 @@ export default function Navbar({ isVisible = true }: NavbarProps) {
     { label: "WORK", href: "#work", index: "02" },
     { label: "CAPABILITIES", href: "#capabilities", index: "03" },
     { label: "CO-FOUNDER", href: "#cofounder", index: "04" },
-    { label: "STUDIO", href: "#studio", index: "05" },
   ];
 
   return (
