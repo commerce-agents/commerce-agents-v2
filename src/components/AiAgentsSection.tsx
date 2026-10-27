@@ -134,9 +134,9 @@ export default function AiAgentsSection() {
 
             {/* Bolder, Bigger, Perfectly Centered Title */}
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-light text-white uppercase tracking-tight max-w-4xl mx-auto text-center leading-[1.12]">
-              SOFTWARE THAT SELLS{" "}
+              YOUR 24/7 AUTONOMOUS{" "}
               <span className="bg-gradient-to-r from-[#9780FF] via-[#00F0FF] to-[#FF7410] bg-clip-text text-transparent font-normal inline-block">
-                WHILE YOU SLEEP
+                REVENUE ENGINE
               </span>
             </h2>
 
