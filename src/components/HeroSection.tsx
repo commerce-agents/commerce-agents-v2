@@ -5,19 +5,20 @@ import { ArrowDown, ArrowUpRight, Zap, Sparkles, Terminal, Activity, Cpu } from 
 import gsap from "gsap";
 
 interface HeroSectionProps {
-  introState?: "loading" | "gliding" | "complete";
   onIntroComplete?: () => void;
 }
 
-export default function HeroSection({ introState = "complete", onIntroComplete }: HeroSectionProps) {
+export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const curtainRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleGlowRef = useRef<HTMLDivElement>(null);
   const surroundingRef = useRef<HTMLDivElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
   const videoBgRef = useRef<HTMLDivElement>(null);
 
-  // 3D Tilt Card container ref
+  // 3D Tilt Card container refs
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const leftCardRef = useRef<HTMLDivElement>(null);
   const centerCardRef = useRef<HTMLDivElement>(null);
@@ -25,90 +26,171 @@ export default function HeroSection({ introState = "complete", onIntroComplete }
   const blobRef = useRef<HTMLDivElement>(null);
 
   const mousePosRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
+  const onIntroCompleteRef = useRef(onIntroComplete);
+  onIntroCompleteRef.current = onIntroComplete;
 
-  // ─── 1. Blur-to-Clear Morph Reveal of Surrounding Hero Elements ───────────
+  // ─── 1. Single-Element Wordmark Glide & Sequential Reveal ─────────────────
   useEffect(() => {
+    const title = titleRef.current;
+    const curtain = curtainRef.current;
     const eyebrow = eyebrowRef.current;
     const surrounding = surroundingRef.current;
-    const title = titleRef.current;
-    const canvas = canvasRef.current;
     const videoBg = videoBgRef.current;
+    const canvas = canvasRef.current;
+    const titleGlow = titleGlowRef.current;
 
-    if (introState === "loading") {
-      // Start hidden and blurred underneath the preloader
-      if (title) gsap.set(title, { opacity: 0 });
-      if (eyebrow) {
-        gsap.set(eyebrow, {
-          opacity: 0,
-          y: 30,
-          filter: "blur(12px)",
-          transform: "translate3d(0, 30px, 0)",
-        });
-      }
-      if (surrounding) {
-        gsap.set(surrounding, {
-          opacity: 0,
-          y: 55,
-          filter: "blur(22px)",
-          transform: "translate3d(0, 55px, 0)",
-        });
-      }
-      if (canvas) gsap.set(canvas, { opacity: 0 });
-      if (videoBg) gsap.set(videoBg, { opacity: 0 });
-    } else if (introState === "gliding") {
-      const tl = gsap.timeline();
+    if (!title || !curtain || !eyebrow || !surrounding) return;
 
-      // Eyebrow badge slides up and goes sharp
-      if (eyebrow) {
-        tl.to(
-          eyebrow,
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.85,
-            ease: "power3.out",
-          },
-          0.1
-        );
-      }
+    // Calculate exact distance from title's natural position to viewport center
+    const rect = title.getBoundingClientRect();
+    const centerDelta = window.innerHeight / 2 - (rect.top + rect.height / 2);
 
-      // Surrounding elements (subtitle, 3D cards, CTAs) slide up from blurred to razor-sharp
-      if (surrounding) {
-        tl.to(
-          surrounding,
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 1.05,
-            ease: "power3.out",
-          },
-          0.15
-        );
-      }
+    // Initial state: Title starts in exact vertical center of the screen
+    gsap.set(title, {
+      y: centerDelta,
+      opacity: 0,
+      filter: "blur(35px)",
+      letterSpacing: "0.45em",
+      scale: 0.96,
+      transform: `translate3d(0, ${centerDelta}px, 0)`,
+    });
 
-      // Background video & stars smoothly emerge
-      if (canvas) {
-        tl.to(canvas, { opacity: 1, duration: 1.0, ease: "power2.out" }, 0.1);
-      }
-      if (videoBg) {
-        tl.to(videoBg, { opacity: 1, duration: 1.0, ease: "power2.out" }, 0.1);
-      }
-    } else if (introState === "complete") {
-      // Transition finished: reveal real hero title and ensure clean state
-      if (title) gsap.set(title, { opacity: 1 });
-      if (eyebrow) {
-        gsap.set(eyebrow, { opacity: 1, y: 0, filter: "none", clearProps: "filter,transform" });
-      }
-      if (surrounding) {
-        gsap.set(surrounding, { opacity: 1, y: 0, filter: "none", clearProps: "filter,transform" });
-      }
-      if (canvas) gsap.set(canvas, { opacity: 1 });
-      if (videoBg) gsap.set(videoBg, { opacity: 1 });
-      onIntroComplete?.();
+    if (titleGlow) {
+      gsap.set(titleGlow, {
+        y: centerDelta,
+        opacity: 0,
+        scale: 0.8,
+      });
     }
-  }, [introState, onIntroComplete]);
+
+    // Ensure surrounding content is completely hidden behind curtain
+    gsap.set(eyebrow, { opacity: 0, y: 30, filter: "blur(12px)" });
+    gsap.set(surrounding, { opacity: 0, y: 55, filter: "blur(22px)" });
+    if (videoBg) gsap.set(videoBg, { opacity: 0 });
+    if (canvas) gsap.set(canvas, { opacity: 0 });
+
+    const tl = gsap.timeline({
+      delay: 0.1,
+    });
+
+    // 1. Center Unblur Phase: "COMMERCE AGENTS" unblurs into crystal focus at center
+    tl.to(
+      title,
+      {
+        opacity: 1,
+        filter: "blur(0px)",
+        letterSpacing: "0.14em",
+        scale: 1,
+        duration: 1.35,
+        ease: "power3.out",
+      },
+      0
+    );
+
+    if (titleGlow) {
+      tl.to(
+        titleGlow,
+        {
+          opacity: 0.45,
+          scale: 1,
+          duration: 1.35,
+          ease: "power2.out",
+        },
+        0
+      );
+    }
+
+    // 2. Pause: Let user take in the sharp centered wordmark
+    tl.to({}, { duration: 0.4 });
+
+    // 3. The Slide Up: Text glides up from center into its natural hero coordinates
+    tl.to(
+      title,
+      {
+        y: 0,
+        duration: 0.95,
+        ease: "power3.inOut",
+      },
+      "+=0"
+    );
+
+    if (titleGlow) {
+      tl.to(
+        titleGlow,
+        {
+          y: 0,
+          opacity: 0,
+          duration: 0.75,
+          ease: "power2.inOut",
+        },
+        "<"
+      );
+    }
+
+    // 4. Black Curtain Dissolves as text reaches its destination
+    tl.to(
+      curtain,
+      {
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.out",
+        onComplete: () => {
+          if (curtain) curtain.style.display = "none";
+        },
+      },
+      "-=0.35"
+    );
+
+    // 5. Eyebrow badge slides up from below
+    tl.to(
+      eyebrow,
+      {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 0.75,
+        ease: "power3.out",
+      },
+      "-=0.3"
+    );
+
+    // 6. Surrounding elements (subtitle, 3D cards, CTAs) slide up from blur to clear
+    tl.to(
+      surrounding,
+      {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 0.95,
+        ease: "power3.out",
+      },
+      "-=0.55"
+    );
+
+    // 7. Video and Star particles fade in smoothly
+    if (videoBg) {
+      tl.to(videoBg, { opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.6");
+    }
+    if (canvas) {
+      tl.to(canvas, { opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.6");
+    }
+
+    tl.call(() => {
+      onIntroCompleteRef.current?.();
+    });
+
+    // Skip on Escape or click
+    const handleSkip = () => {
+      tl.progress(1);
+    };
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") handleSkip();
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
 
   // ─── 2. Interactive White Star Particles Canvas ────────────────────────────
   useEffect(() => {
@@ -243,10 +325,30 @@ export default function HeroSection({ introState = "complete", onIntroComplete }
       ref={containerRef}
       className="relative min-h-screen flex flex-col justify-center items-center pt-28 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 md:px-12 bg-[#09080A] overflow-hidden"
     >
+      {/* ── SOLID BLACK CURTAIN: Blocks 100% of the page during initial load ── */}
+      <div
+        ref={curtainRef}
+        className="fixed inset-0 bg-[#09080A] z-30 pointer-events-none"
+        style={{ willChange: "opacity" }}
+      />
+
+      {/* Atmospheric Glow behind Heading */}
+      <div
+        ref={titleGlowRef}
+        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] rounded-full pointer-events-none z-35 opacity-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(151,128,255,0.3) 0%, rgba(255,116,16,0.12) 45%, transparent 70%)",
+          filter: "blur(80px)",
+          willChange: "transform, opacity",
+        }}
+      />
+
       {/* Background Chromatic Video Loop */}
       <div
         ref={videoBgRef}
         className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        style={{ opacity: 0 }}
       >
         <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-20 scale-105">
           <source src="/video/hero-bg.mp4" type="video/mp4" />
@@ -259,14 +361,16 @@ export default function HeroSection({ introState = "complete", onIntroComplete }
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none z-10"
+        style={{ opacity: 0 }}
       />
 
       {/* ─── HERO CONTENT ──────────────────────────────────────────────────────── */}
       <div className="relative max-w-7xl mx-auto flex flex-col items-center text-center z-20 w-full">
-        {/* Eyebrow Badge – slides up and unblurs with morph */}
+        {/* Eyebrow Badge – starts hidden behind curtain */}
         <div
           ref={eyebrowRef}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)] max-w-full will-change-transform"
+          className="relative z-20 inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)] max-w-full will-change-transform"
+          style={{ opacity: 0, transform: "translateY(30px)", filter: "blur(12px)" }}
         >
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9780FF] opacity-75" />
@@ -279,24 +383,27 @@ export default function HeroSection({ introState = "complete", onIntroComplete }
           <span className="font-mono text-[11px] text-[#FF7410] hidden sm:inline">PROTOTYPE TO SCALE</span>
         </div>
 
-        {/* Real Hero Headline – destination of the preloader glide */}
+        {/* ── THE ONLY HEADLINE ELEMENT IN THE DOM (z-40 so it stays above curtain) ── */}
         <h1
-          id="hero-heading"
           ref={titleRef}
-          className="font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform max-w-full px-4 text-center"
+          className="relative z-40 font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform max-w-full px-4 text-center"
           style={{
             fontSize: "clamp(20px, 6.2vw, 88px)",
-            letterSpacing: "0.14em",
+            letterSpacing: "0.45em",
             whiteSpace: "nowrap",
+            opacity: 0,
+            filter: "blur(35px)",
+            willChange: "transform, filter, opacity, letter-spacing",
           }}
         >
           COMMERCE AGENTS
         </h1>
 
-        {/* Surrounding Elements Container – unblurs and slides up from below */}
+        {/* Surrounding Elements Container – starts 100% hidden behind curtain */}
         <div
           ref={surroundingRef}
-          className="flex flex-col items-center w-full will-change-transform"
+          className="relative z-20 flex flex-col items-center w-full will-change-transform"
+          style={{ opacity: 0, transform: "translateY(55px)", filter: "blur(22px)" }}
         >
           {/* Subtitle */}
           <p className="font-editorial text-lg sm:text-2xl text-zinc-300 font-light tracking-wide mt-4 sm:mt-5 mb-8 sm:mb-12 max-w-2xl px-2">
