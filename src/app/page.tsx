@@ -5,6 +5,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ScrollRevealManifesto from "@/components/ScrollRevealManifesto";
+import AiAgentsSection from "@/components/AiAgentsSection";
 import ClientConstellation from "@/components/ClientConstellation";
 import CapabilitiesSection from "@/components/CapabilitiesSection";
 import CoFounderDossier from "@/components/CoFounderDossier";
@@ -20,6 +21,7 @@ export default function Home() {
         <Navbar isVisible={introComplete} />
         <HeroSection onIntroComplete={() => setIntroComplete(true)} />
         <ScrollRevealManifesto />
+        <AiAgentsSection />
         <ClientConstellation />
         <CapabilitiesSection />
         <CoFounderDossier />

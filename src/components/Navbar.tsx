@@ -5,11 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
-export default function Navbar({ isVisible = true }: { isVisible?: boolean }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [chennaiTime, setChennaiTime] = useState("");
+interface NavbarProps {
+  isVisible?: boolean;
+}
+
+export default function Navbar({ isVisible = true }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [chennaiTime, setChennaiTime] = useState("");
 
   useEffect(() => {
     const updateTime = () => {
@@ -39,10 +43,11 @@ export default function Navbar({ isVisible = true }: { isVisible?: boolean }) {
   }, []);
 
   const navLinks = [
-    { label: "WORK", href: "#work", index: "01" },
-    { label: "CAPABILITIES", href: "#capabilities", index: "02" },
-    { label: "CO-FOUNDER", href: "#cofounder", index: "03" },
-    { label: "STUDIO", href: "#studio", index: "04" },
+    { label: "AI AGENTS", href: "#ai-agents", index: "01" },
+    { label: "WORK", href: "#work", index: "02" },
+    { label: "CAPABILITIES", href: "#capabilities", index: "03" },
+    { label: "CO-FOUNDER", href: "#cofounder", index: "04" },
+    { label: "STUDIO", href: "#studio", index: "05" },
   ];
 
   return (
@@ -97,7 +102,7 @@ export default function Navbar({ isVisible = true }: { isVisible?: boolean }) {
                   key={link.label}
                   href={link.href}
                   onMouseEnter={() => setHoveredIdx(idx)}
-                  className="relative px-5 py-2 text-xs font-medium text-zinc-400 hover:text-white transition-colors duration-200 z-10 flex items-center gap-1.5 group"
+                  className="relative px-4 py-2 text-xs font-medium text-zinc-400 hover:text-white transition-colors duration-200 z-10 flex items-center gap-1.5 group"
                 >
                   <span className="font-mono text-[10px] text-zinc-500 group-hover:text-[#9780FF] transition-colors">
                     {link.index}
