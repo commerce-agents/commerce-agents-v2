@@ -135,15 +135,16 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     }));
 
     const onMouseMove = (e: MouseEvent) => {
+      // Calculate normalized mouse position relative to viewport, strictly clamped between -1 and 1
+      const nx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+      const ny = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+      mousePosRef.current.targetX = Math.max(-1, Math.min(1, nx));
+      mousePosRef.current.targetY = Math.max(-1, Math.min(1, ny));
+
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
-
-      const cx = rect.width / 2;
-      const cy = rect.height / 2;
-      mousePosRef.current.targetX = (mx - cx) / cx;
-      mousePosRef.current.targetY = (my - cy) / cy;
 
       const repelRadius = 140;
       for (const p of pts) {
@@ -206,8 +207,9 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
       m.currentX += (m.targetX - m.currentX) * 0.06;
       m.currentY += (m.targetY - m.currentY) * 0.06;
 
-      const tx = m.currentX;
-      const ty = m.currentY;
+      // Strictly clamp to [-1, 1] so cards can never flip or rotate upside down
+      const tx = Math.max(-1, Math.min(1, m.currentX));
+      const ty = Math.max(-1, Math.min(1, m.currentY));
 
       if (blobRef.current) {
         blobRef.current.style.transform = `translate(calc(-50% + ${tx * 50}px), calc(-50% + ${ty * 35}px))`;

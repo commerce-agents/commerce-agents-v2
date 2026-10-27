@@ -2,63 +2,41 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-// Words that form the studio's manifesto statement
 interface ManifestoToken {
   text: string;
   isHighlight?: boolean;
 }
 
 const MANIFESTO_TOKENS: ManifestoToken[] = [
-  { text: "Most" },
-  { text: "businesses" },
-  { text: "lose" },
-  { text: "sales" },
-  { text: "to" },
-  { text: "slow" },
-  { text: "websites" },
-  { text: "and" },
-  { text: "burn" },
-  { text: "hours" },
-  { text: "on" },
-  { text: "manual" },
-  { text: "work." },
   { text: "We" },
-  { text: "do" },
-  { text: "the" },
-  { text: "opposite." },
-  { text: "We" },
-  { text: "build" },
+  { text: "engineer", isHighlight: true },
   { text: "custom", isHighlight: true },
   { text: "commerce", isHighlight: true },
-  { text: "platforms", isHighlight: true },
+  { text: "platforms" },
   { text: "and" },
-  { text: "deploy" },
-  { text: "intelligent", isHighlight: true },
+  { text: "deploy", isHighlight: true },
+  { text: "autonomous", isHighlight: true },
   { text: "AI", isHighlight: true },
   { text: "agents", isHighlight: true },
   { text: "that" },
-  { text: "handle", isHighlight: true },
-  { text: "your", isHighlight: true },
-  { text: "sales,", isHighlight: true },
-  { text: "qualify", isHighlight: true },
-  { text: "leads,", isHighlight: true },
-  { text: "and" },
   { text: "run" },
   { text: "your" },
-  { text: "daily" },
+  { text: "sales", isHighlight: true },
+  { text: "and" },
   { text: "operations", isHighlight: true },
   { text: "24/7.", isHighlight: true },
   { text: "No", isHighlight: false },
-  { text: "bloat.", isHighlight: true },
+  { text: "slow", isHighlight: true },
+  { text: "templates.", isHighlight: true },
   { text: "No", isHighlight: false },
-  { text: "complex", isHighlight: true },
-  { text: "setups.", isHighlight: true },
+  { text: "manual", isHighlight: true },
+  { text: "work.", isHighlight: true },
   { text: "Just" },
   { text: "software" },
   { text: "that" },
-  { text: "works", isHighlight: true },
-  { text: "for", isHighlight: true },
-  { text: "you.", isHighlight: true },
+  { text: "scales", isHighlight: true },
+  { text: "your" },
+  { text: "revenue.", isHighlight: true },
 ];
 
 export default function ScrollRevealManifesto() {
@@ -72,7 +50,6 @@ export default function ScrollRevealManifesto() {
       const totalScrollable = containerRef.current.offsetHeight - window.innerHeight;
       if (totalScrollable <= 0) return;
 
-      // Progress from 0 (entry into view) to 1 (exit)
       const currentScroll = -rect.top;
       const rawProgress = currentScroll / totalScrollable;
       const clamped = Math.max(0, Math.min(1, rawProgress));
@@ -90,16 +67,16 @@ export default function ScrollRevealManifesto() {
     <section
       ref={containerRef}
       className="relative bg-[#08070A]"
-      style={{ height: "260vh" }}
+      style={{ height: "230vh" }}
     >
       {/* Sticky Fullscreen Frame */}
-      <div className="sticky top-0 h-screen flex flex-col justify-between items-center px-6 sm:px-12 md:px-20 py-16 overflow-hidden">
+      <div className="sticky top-0 h-screen flex flex-col justify-between items-center px-6 sm:px-12 md:px-16 py-14 overflow-hidden">
         {/* Ambient atmospheric glow */}
         <div
           className="absolute pointer-events-none rounded-full"
           style={{
-            width: 650,
-            height: 380,
+            width: 600,
+            height: 340,
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
@@ -109,26 +86,22 @@ export default function ScrollRevealManifesto() {
         />
 
         {/* Section Header */}
-        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-zinc-400 z-10">
+        <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-zinc-400 z-10">
           <span className="w-2 h-2 rounded-full bg-[#9780FF] animate-pulse" />
-          <span>MANIFESTO // PHILOSOPHY &amp; MISSION</span>
+          <span>WHAT WE ENGINEER &amp; WHAT WE DEPLOY</span>
         </div>
 
-        {/* The Manifesto Statement – Fluid word-by-word unblur reveal */}
-        <div className="relative z-10 max-w-5xl text-center flex flex-wrap justify-center items-center gap-x-3.5 gap-y-2 sm:gap-x-5 sm:gap-y-3 select-none my-auto">
+        {/* The Manifesto Statement – Sized cleanly so it never crowds the screen */}
+        <div className="relative z-10 max-w-4xl text-center flex flex-wrap justify-center items-center gap-x-3 gap-y-2 sm:gap-x-4 sm:gap-y-2.5 select-none my-auto px-4">
           {MANIFESTO_TOKENS.map((token, index) => {
-            // Each token reveals sequentially across the scroll progress (0.05 to 0.90)
             const revealPoint = 0.05 + (index / totalTokens) * 0.85;
-            // Token transition window
             const diff = scrollProgress - revealPoint;
-
-            // t goes from 0 (blurred) to 1 (fully sharp and stays sharp)
             const transitionSpread = 0.08;
             const t = Math.max(0, Math.min(1, (diff + transitionSpread) / transitionSpread));
 
-            const blurAmount = (1 - t) * 16;
+            const blurAmount = (1 - t) * 14;
             const opacity = 0.12 + t * 0.88;
-            const translateY = (1 - t) * 14;
+            const translateY = (1 - t) * 12;
 
             return (
               <span
@@ -140,7 +113,7 @@ export default function ScrollRevealManifesto() {
                   transition: "filter 0.08s ease-out, opacity 0.08s ease-out, transform 0.08s ease-out",
                   willChange: "filter, opacity, transform",
                 }}
-                className={`inline-block font-light text-2xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.25] tracking-tight ${
+                className={`inline-block font-light text-xl sm:text-3xl md:text-4xl lg:text-[42px] leading-[1.3] tracking-tight ${
                   token.isHighlight
                     ? "font-normal bg-gradient-to-r from-[#9780FF] via-[#FF7410] to-[#00F0FF] bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(151,128,255,0.35)]"
                     : "text-[#F5F5F7]"
