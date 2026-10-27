@@ -173,7 +173,7 @@ export default function Footer() {
             href="mailto:hello.commerceagents@gmail.com"
             className="inline-block font-light text-white tracking-tight leading-none hover:text-[#9780FF] transition-colors duration-300 drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
             style={{
-              fontSize: "clamp(22px, 2.7vw, 44px)",
+              fontSize: "clamp(16px, 3.8vw, 44px)",
               whiteSpace: "nowrap",
             }}
           >
@@ -204,7 +204,7 @@ export default function Footer() {
         <h2
           className="font-bold text-white uppercase leading-none drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)] inline-block"
           style={{
-            fontSize: "clamp(26px, 6.7vw, 116px)",
+            fontSize: "clamp(20px, 6.5vw, 116px)",
             letterSpacing: "0.12em",
             whiteSpace: "nowrap",
           }}

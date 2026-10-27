@@ -302,7 +302,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
           ref={titleRef}
           className="font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform max-w-full"
           style={{
-            fontSize: "clamp(22px, 6.4vw, 88px)",
+            fontSize: "clamp(20px, 6.2vw, 88px)",
             letterSpacing: "0.14em",
             whiteSpace: "nowrap",
           }}

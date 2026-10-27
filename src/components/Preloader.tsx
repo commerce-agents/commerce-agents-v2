@@ -141,7 +141,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           ref={titleTextRef}
           className="font-bold text-white uppercase leading-none select-none drop-shadow-[0_15px_40px_rgba(151,128,255,0.3)]"
           style={{
-            fontSize: "clamp(34px, 8.5vw, 108px)",
+            fontSize: "clamp(20px, 7.5vw, 108px)",
             whiteSpace: "nowrap",
           }}
         >
