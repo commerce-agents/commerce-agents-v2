@@ -5,10 +5,11 @@ import { ArrowDown, ArrowUpRight, Zap, Sparkles, Terminal, Activity, Cpu } from 
 import gsap from "gsap";
 
 interface HeroSectionProps {
+  introState?: "loading" | "gliding" | "complete";
   onIntroComplete?: () => void;
 }
 
-export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
+export default function HeroSection({ introState = "complete", onIntroComplete }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -25,12 +26,89 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
 
   const mousePosRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
 
-  const onIntroCompleteRef = useRef(onIntroComplete);
-  onIntroCompleteRef.current = onIntroComplete;
-
+  // ─── 1. Blur-to-Clear Morph Reveal of Surrounding Hero Elements ───────────
   useEffect(() => {
-    onIntroCompleteRef.current?.();
-  }, []);
+    const eyebrow = eyebrowRef.current;
+    const surrounding = surroundingRef.current;
+    const title = titleRef.current;
+    const canvas = canvasRef.current;
+    const videoBg = videoBgRef.current;
+
+    if (introState === "loading") {
+      // Start hidden and blurred underneath the preloader
+      if (title) gsap.set(title, { opacity: 0 });
+      if (eyebrow) {
+        gsap.set(eyebrow, {
+          opacity: 0,
+          y: 30,
+          filter: "blur(12px)",
+          transform: "translate3d(0, 30px, 0)",
+        });
+      }
+      if (surrounding) {
+        gsap.set(surrounding, {
+          opacity: 0,
+          y: 55,
+          filter: "blur(22px)",
+          transform: "translate3d(0, 55px, 0)",
+        });
+      }
+      if (canvas) gsap.set(canvas, { opacity: 0 });
+      if (videoBg) gsap.set(videoBg, { opacity: 0 });
+    } else if (introState === "gliding") {
+      const tl = gsap.timeline();
+
+      // Eyebrow badge slides up and goes sharp
+      if (eyebrow) {
+        tl.to(
+          eyebrow,
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.85,
+            ease: "power3.out",
+          },
+          0.1
+        );
+      }
+
+      // Surrounding elements (subtitle, 3D cards, CTAs) slide up from blurred to razor-sharp
+      if (surrounding) {
+        tl.to(
+          surrounding,
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.05,
+            ease: "power3.out",
+          },
+          0.15
+        );
+      }
+
+      // Background video & stars smoothly emerge
+      if (canvas) {
+        tl.to(canvas, { opacity: 1, duration: 1.0, ease: "power2.out" }, 0.1);
+      }
+      if (videoBg) {
+        tl.to(videoBg, { opacity: 1, duration: 1.0, ease: "power2.out" }, 0.1);
+      }
+    } else if (introState === "complete") {
+      // Transition finished: reveal real hero title and ensure clean state
+      if (title) gsap.set(title, { opacity: 1 });
+      if (eyebrow) {
+        gsap.set(eyebrow, { opacity: 1, y: 0, filter: "none", clearProps: "filter,transform" });
+      }
+      if (surrounding) {
+        gsap.set(surrounding, { opacity: 1, y: 0, filter: "none", clearProps: "filter,transform" });
+      }
+      if (canvas) gsap.set(canvas, { opacity: 1 });
+      if (videoBg) gsap.set(videoBg, { opacity: 1 });
+      onIntroComplete?.();
+    }
+  }, [introState, onIntroComplete]);
 
   // ─── 2. Interactive White Star Particles Canvas ────────────────────────────
   useEffect(() => {
@@ -49,7 +127,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     resize();
     window.addEventListener("resize", resize, { passive: true });
 
-    const N = 80;
+    const N = 85;
     const colors = ["#FFFFFF", "#FFFFFF", "#F8FAFC", "#E0E7FF", "#C4B5FD", "#9780FF"];
     const pts = Array.from({ length: N }, () => ({
       x: Math.random() * (canvas.width || window.innerWidth),
@@ -63,7 +141,6 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     }));
 
     const onMouseMove = (e: MouseEvent) => {
-      // Calculate normalized mouse position relative to viewport, strictly clamped between -1 and 1
       const nx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
       const ny = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
       mousePosRef.current.targetX = Math.max(-1, Math.min(1, nx));
@@ -126,7 +203,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     };
   }, []);
 
-  // ─── 3. Dynamic 3-Card Parallax & Tilting (Desktop/Tablet) ─────────────────
+  // ─── 3. Dynamic 3-Card Parallax & Tilting ──────────────────────────────────
   useEffect(() => {
     let raf: number;
 
@@ -135,7 +212,6 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
       m.currentX += (m.targetX - m.currentX) * 0.06;
       m.currentY += (m.targetY - m.currentY) * 0.06;
 
-      // Strictly clamp to [-1, 1] so cards can never flip or rotate upside down
       const tx = Math.max(-1, Math.min(1, m.currentX));
       const ty = Math.max(-1, Math.min(1, m.currentY));
 
@@ -187,10 +263,10 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
 
       {/* ─── HERO CONTENT ──────────────────────────────────────────────────────── */}
       <div className="relative max-w-7xl mx-auto flex flex-col items-center text-center z-20 w-full">
-        {/* Eyebrow Badge */}
+        {/* Eyebrow Badge – slides up and unblurs with morph */}
         <div
           ref={eyebrowRef}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)] max-w-full"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)] max-w-full will-change-transform"
         >
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9780FF] opacity-75" />
@@ -203,10 +279,11 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
           <span className="font-mono text-[11px] text-[#FF7410] hidden sm:inline">PROTOTYPE TO SCALE</span>
         </div>
 
-        {/* Real Hero Headline – starts at dead center, unblurs and glides smoothly up */}
+        {/* Real Hero Headline – destination of the preloader glide */}
         <h1
+          id="hero-heading"
           ref={titleRef}
-          className="font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform max-w-full"
+          className="font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] will-change-transform max-w-full px-4 text-center"
           style={{
             fontSize: "clamp(20px, 6.2vw, 88px)",
             letterSpacing: "0.14em",
@@ -216,7 +293,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
           COMMERCE AGENTS
         </h1>
 
-        {/* Surrounding Elements Container – reveals after title moves up */}
+        {/* Surrounding Elements Container – unblurs and slides up from below */}
         <div
           ref={surroundingRef}
           className="flex flex-col items-center w-full will-change-transform"
@@ -226,7 +303,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
             The 0→1 Product Design &amp; Autonomous Commerce Studio
           </p>
 
-          {/* ─── 3 CONNECTED 3D STATS CARDS: DESKTOP & TABLET ONLY (HIDDEN ON MOBILE) ─── */}
+          {/* ─── 3 CONNECTED 3D STATS CARDS: DESKTOP & TABLET ONLY ─── */}
           <div
             ref={cardsContainerRef}
             className="hidden md:flex relative w-full max-w-6xl items-center justify-center my-6"
@@ -457,6 +534,17 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
               <span>EXPLORE WORK</span>
               <ArrowDown className="w-4 h-4" />
             </a>
+          </div>
+
+          {/* Micro Status Footnote */}
+          <div className="mt-8 sm:mt-10 flex items-center gap-3 text-[11px] font-mono text-zinc-400">
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            <span>2 SLOTS AVAILABLE FOR Q2 2026</span>
+            <span className="text-zinc-600">/</span>
+            <span className="text-zinc-400">AVG SPRINT: 4-6 WEEKS</span>
           </div>
         </div>
       </div>
