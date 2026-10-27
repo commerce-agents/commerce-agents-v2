@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import FluidScrollReveal from "@/components/FluidScrollReveal";
 import dynamic from "next/dynamic";
 import { CheckCircle2, ArrowRight, Code2, Cpu, Smartphone, ShoppingBag } from "lucide-react";
 
@@ -80,7 +81,8 @@ export default function CapabilitiesSection() {
     <section id="capabilities" className="relative py-28 px-4 sm:px-8 md:px-12 bg-[#09080A]">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-white/10 pb-8">
+        <FluidScrollReveal blurAmount={24} yOffset={35}>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-white/10 pb-8">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono text-[#FF7410] mb-3">
               <span>[02] STUDIO CAPABILITIES</span>
@@ -95,16 +97,18 @@ export default function CapabilitiesSection() {
             We don't do generic templates or bloated WordPress sites. We engineer proprietary,
             scalable software products tailored to your revenue and operational model.
           </p>
-        </div>
+          </div>
+        </FluidScrollReveal>
 
         {/* 4 Cards Grid with Rotating Border Accent */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <FluidScrollReveal staggerChildren={true} staggerDelay={0.1} blurAmount={28} yOffset={45}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {capabilities.map((cap, idx) => {
             const Icon = cap.icon;
             return (
               <div
                 key={cap.index}
-                className="relative group rounded-3xl p-[1px] overflow-hidden transition-all duration-500 hover:-translate-y-1"
+                data-reveal-item className="relative group rounded-3xl p-[1px] overflow-hidden transition-all duration-500 hover:-translate-y-1"
               >
                 {/* 360 Rotating Border Gradient */}
                 <div className="absolute -inset-[200%] animate-border-rotate opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
@@ -162,7 +166,8 @@ export default function CapabilitiesSection() {
               </div>
             );
           })}
-        </div>
+          </div>
+        </FluidScrollReveal>
       </div>
     </section>
   );

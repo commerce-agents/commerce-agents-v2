@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, Mail } from "lucide-react";
+import ReturnToStudioButton from "@/components/ReturnToStudioButton";
+import { ShieldCheck, Mail } from "lucide-react";
 
 export const metadata = {
   title: "Privacy Policy | Commerce Agents Studio",
@@ -22,14 +23,8 @@ export default function PrivacyPage() {
       />
 
       <div className="relative max-w-4xl mx-auto">
-        {/* Back Link */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white transition-colors mb-12 group"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-          <span>RETURN TO STUDIO</span>
-        </Link>
+        {/* Back Button */}
+        <ReturnToStudioButton />
 
         {/* Header */}
         <div className="border-b border-white/10 pb-8 mb-12">

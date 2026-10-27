@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import FluidScrollReveal from "@/components/FluidScrollReveal";
 import Image from "next/image";
 import { ArrowUpRight, Compass, Shield, Terminal, Award, Mail } from "lucide-react";
 
@@ -23,6 +24,7 @@ export default function CoFounderDossier() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left: Pixelated HUD Portrait Frame with B&W to Color Hover Transition (5 cols) */}
           <div className="lg:col-span-5 flex justify-center">
+            <FluidScrollReveal blurAmount={28} yOffset={40} className="w-full max-w-md">
             <div
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
@@ -106,10 +108,12 @@ export default function CoFounderDossier() {
                 </div>
               </div>
             </div>
+            </FluidScrollReveal>
           </div>
 
           {/* Right: Studio Philosophy & Manifesto (7 cols) */}
           <div className="lg:col-span-7 flex flex-col justify-center">
+            <FluidScrollReveal blurAmount={24} yOffset={35} delay={0.1}>
             <h2 className="text-3xl sm:text-5xl font-light tracking-tight text-white mb-6 leading-tight">
               "WE DON'T ENGINEER GENERIC TEMPLATES. <br />
               WE BUILD SYSTEMS WITH <br />
@@ -183,6 +187,7 @@ export default function CoFounderDossier() {
                 LINKEDIN ↗
               </a>
             </div>
+            </FluidScrollReveal>
           </div>
         </div>
       </div>

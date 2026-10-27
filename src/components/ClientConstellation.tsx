@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import FluidScrollReveal from "@/components/FluidScrollReveal";
 import Image from "next/image";
 import { Sparkles, Activity, ExternalLink } from "lucide-react";
 
@@ -72,7 +73,8 @@ export default function ClientConstellation() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-white/10 pb-8">
+        <FluidScrollReveal blurAmount={24} yOffset={35}>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-white/10 pb-8">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono text-[#9780FF] mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[#FF7410]" />
@@ -90,10 +92,12 @@ export default function ClientConstellation() {
               and custom food &amp; retail software engineered for direct operational efficiency.
             </p>
           </div>
-        </div>
+          </div>
+        </FluidScrollReveal>
 
         {/* 4 Client Cards Grid with Brand Name beside Logo */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <FluidScrollReveal staggerChildren={true} staggerDelay={0.1} blurAmount={28} yOffset={45}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {clients.map((client) => {
             const isHovered = hoveredClient === client.id;
             return (
@@ -101,7 +105,7 @@ export default function ClientConstellation() {
                 key={client.id}
                 onMouseEnter={() => setHoveredClient(client.id)}
                 onMouseLeave={() => setHoveredClient(null)}
-                className={`relative group rounded-3xl p-8 transition-all duration-500 overflow-hidden border ${
+                data-reveal-item className={`relative group rounded-3xl p-8 transition-all duration-500 overflow-hidden border ${
                   isHovered
                     ? "border-[#9780FF]/40 bg-[#121016]/95 shadow-[0_0_50px_-15px_rgba(151,128,255,0.25)] -translate-y-1"
                     : "border-white/[0.08] bg-[#0E0D11]/80 hover:border-white/20"
@@ -171,7 +175,8 @@ export default function ClientConstellation() {
               </div>
             );
           })}
-        </div>
+          </div>
+        </FluidScrollReveal>
 
         {/* Direct Studio Launch Callout */}
         <div className="mt-12 rounded-2xl p-6 border border-white/[0.08] bg-white/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4">

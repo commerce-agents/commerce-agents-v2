@@ -37,6 +37,27 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     const canvas = canvasRef.current;
     if (!title || !surrounding) return;
 
+    // If already seen in this session (e.g. returning from privacy/terms), skip intro and preserve scroll
+    const hasSeenIntro =
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("commerce_agents_intro_seen") === "true";
+
+    if (hasSeenIntro) {
+      gsap.set(title, {
+        y: 0,
+        filter: "blur(0px)",
+        opacity: 1,
+        scale: 1,
+        letterSpacing: "0.14em",
+      });
+      if (eyebrow) gsap.set(eyebrow, { opacity: 1, y: 0 });
+      gsap.set(surrounding, { opacity: 1, y: 0 });
+      if (videoBg) gsap.set(videoBg, { opacity: 1 });
+      if (canvas) gsap.set(canvas, { opacity: 1 });
+      onIntroCompleteRef.current?.();
+      return;
+    }
+
     window.scrollTo(0, 0);
 
     // Calculate vertical distance to dead center of viewport
@@ -92,6 +113,7 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
             stagger: 0.08,
             ease: "power2.out",
             onComplete: () => {
+              sessionStorage.setItem("commerce_agents_intro_seen", "true");
               onIntroCompleteRef.current?.();
             },
           },
