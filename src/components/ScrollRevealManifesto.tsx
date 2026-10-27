@@ -125,17 +125,7 @@ export default function ScrollRevealManifesto() {
           })}
         </div>
 
-        {/* Scroll Progress Indicator & Telemetry */}
-        <div className="flex items-center gap-4 font-mono text-[11px] text-zinc-500 uppercase tracking-widest z-10">
-          <span>SCROLL PROGRESS</span>
-          <div className="w-24 sm:w-36 h-[2px] bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#9780FF] to-[#FF7410]"
-              style={{ width: `${Math.round(scrollProgress * 100)}%`, transition: "width 0.1s linear" }}
-            />
-          </div>
-          <span className="text-[#9780FF] font-medium">{Math.round(scrollProgress * 100)}%</span>
-        </div>
+
       </div>
     </section>
   );
