@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 export default function Footer() {
@@ -218,9 +219,13 @@ export default function Footer() {
           <span>© 2026 COMMERCE AGENTS STUDIO. ALL RIGHTS RESERVED.</span>
         </div>
         <div className="flex items-center gap-6">
-          <span className="hover:text-white transition-colors cursor-pointer">PRIVACY POLICY</span>
+          <Link href="/privacy" className="hover:text-white transition-colors cursor-pointer">
+            PRIVACY POLICY
+          </Link>
           <span className="text-zinc-600">|</span>
-          <span className="hover:text-white transition-colors cursor-pointer">TERMS OF SERVICE</span>
+          <Link href="/terms" className="hover:text-white transition-colors cursor-pointer">
+            TERMS OF SERVICE
+          </Link>
         </div>
       </div>
     </footer>
