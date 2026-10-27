@@ -130,7 +130,14 @@ export default function AiAgentsSection() {
             </span>
           </div>
 
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-light text-white uppercase tracking-tight max-w-3xl">
+          <h2
+            className="font-light text-white uppercase tracking-tight w-full max-w-5xl text-center"
+            style={{
+              fontSize: "clamp(16px, 3.2vw, 42px)",
+              letterSpacing: "-0.01em",
+              whiteSpace: "nowrap",
+            }}
+          >
             SOFTWARE THAT RUNS YOUR BUSINESS{" "}
             <span className="bg-gradient-to-r from-[#9780FF] via-[#00F0FF] to-[#FF7410] bg-clip-text text-transparent font-normal">
               24/7 ON AUTOPILOT
