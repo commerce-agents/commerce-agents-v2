@@ -130,11 +130,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
       { url: "/favicon.png", type: "image/png" },
-      { url: "/favicon.ico" },
     ],
+    shortcut: "/favicon.ico",
     apple: [
-      { url: "/commerce-agents-logo-grad.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
   category: "technology",

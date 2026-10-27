@@ -329,17 +329,49 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
             {/* Volumetric Organic Iridescent Glow behind cards */}
             <div
               ref={blobRef}
-              className="pointer-events-none transition-transform duration-100 ease-out absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              className="pointer-events-none transition-transform duration-150 ease-out absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
               style={{
-                width: 720,
-                height: 480,
-                borderRadius: "50%",
-                background:
-                  "radial-gradient(ellipse at center, rgba(151,128,255,0.55) 0%, rgba(115,34,242,0.35) 45%, rgba(255,116,16,0.18) 70%, transparent 80%)",
-                filter: "blur(90px)",
+                width: 1050,
+                height: 620,
                 willChange: "transform",
               }}
-            />
+            >
+              {/* Outer Radiant Atmospheric Glow */}
+              <div
+                className="absolute inset-0 rounded-[50%]"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 50% 50%, rgba(147, 51, 234, 0.85) 0%, rgba(99, 102, 241, 0.65) 35%, rgba(217, 70, 239, 0.4) 60%, rgba(255, 116, 16, 0.2) 75%, transparent 85%)",
+                  filter: "blur(65px)",
+                }}
+              />
+
+              {/* Core Chromatic Nucleus - High Vibrancy Iridescent Liquid */}
+              <div
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[50%]"
+                style={{
+                  width: 780,
+                  height: 480,
+                  background:
+                    "radial-gradient(ellipse at 50% 45%, rgba(216, 180, 254, 0.95) 0%, rgba(147, 51, 234, 0.88) 32%, rgba(56, 189, 248, 0.65) 62%, transparent 78%)",
+                  filter: "blur(38px)",
+                  mixBlendMode: "screen",
+                }}
+              />
+
+              {/* Upper Crown Halo (vividly illuminates header & space above console) */}
+              <div
+                className="absolute left-1/2 top-[8%] -translate-x-1/2 rounded-[50%]"
+                style={{
+                  width: 640,
+                  height: 240,
+                  background:
+                    "radial-gradient(ellipse at 50% 50%, rgba(233, 213, 255, 0.95) 0%, rgba(168, 85, 247, 0.8) 45%, transparent 75%)",
+                  filter: "blur(28px)",
+                  mixBlendMode: "screen",
+                }}
+              />
+            </div>
 
             {/* SVG Glowing Neon Circuit Lines connecting Center Card to Left and Right */}
             <svg
