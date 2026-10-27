@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Preloader from "@/components/Preloader";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -16,18 +17,21 @@ export default function Home() {
   const [introComplete, setIntroComplete] = useState(false);
 
   return (
-    <SmoothScroll>
-      <main className="relative min-h-screen bg-[#09080A] text-[#F4F3F6] selection:bg-[#9780FF]/30 selection:text-[#00F0FF]">
-        <Navbar isVisible={introComplete} />
-        <HeroSection onIntroComplete={() => setIntroComplete(true)} />
-        <ScrollRevealManifesto />
-        <AiAgentsSection />
-        <ClientConstellation />
-        <CapabilitiesSection />
-        <CoFounderDossier />
-        <StudioCoordinates />
-        <Footer />
-      </main>
-    </SmoothScroll>
+    <>
+      <Preloader onComplete={() => setIntroComplete(true)} />
+      <SmoothScroll>
+        <main className="relative min-h-screen bg-[#09080A] text-[#F4F3F6] selection:bg-[#9780FF]/30 selection:text-[#00F0FF]">
+          <Navbar isVisible={introComplete} />
+          <HeroSection />
+          <ScrollRevealManifesto />
+          <AiAgentsSection />
+          <ClientConstellation />
+          <CapabilitiesSection />
+          <CoFounderDossier />
+          <StudioCoordinates />
+          <Footer />
+        </main>
+      </SmoothScroll>
+    </>
   );
 }

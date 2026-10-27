@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import lottie from "lottie-web";
 import gsap from "gsap";
 
@@ -17,84 +17,111 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const animInstance = useRef<any>(null);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
-  // ─── 1. Load Lottie Animation ──────────────────────────────────────────────
+  const finishIntro = useCallback(() => {
+    if (isFinished) return;
+    setIsFinished(true);
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        if (preloaderRef.current) {
+          preloaderRef.current.style.display = "none";
+        }
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("commerce_agents_intro_seen", "true");
+        }
+        onCompleteRef.current?.();
+      },
+    });
+
+    tl.to(lottieContainerRef.current, { scale: 0.9, opacity: 0, duration: 0.3, ease: "power2.inOut" })
+      .to(titleTextRef.current, { opacity: 0, y: -20, filter: "blur(12px)", duration: 0.35, ease: "power2.in" }, "-=0.2")
+      .to(bottomRef.current, { opacity: 0, duration: 0.25 }, "-=0.2")
+      .to(preloaderRef.current, { yPercent: -100, duration: 0.7, ease: "expo.inOut" }, "-=0.1");
+  }, [isFinished]);
+
+  // 1. ESC Key to skip
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        finishIntro();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [finishIntro]);
+
+  // 2. Load Lottie Animation
   useEffect(() => {
     if (!lottieContainerRef.current) return;
-    animInstance.current = lottie.loadAnimation({
-      container: lottieContainerRef.current,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "/lottie/preloader.json",
-    });
+    try {
+      animInstance.current = lottie.loadAnimation({
+        container: lottieContainerRef.current,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        path: "/lottie/preloader.json",
+      });
+    } catch (e) {
+      console.warn("Lottie error:", e);
+    }
     return () => {
       if (animInstance.current) animInstance.current.destroy();
     };
   }, []);
 
-  // ─── 2. "COMMERCE AGENTS" centered blur → sharp + letter spacing animation ──
+  // 3. Center wordmark blur-to-clear + letter spacing
   useEffect(() => {
     if (!titleTextRef.current) return;
     gsap.fromTo(
       titleTextRef.current,
       {
-        filter: "blur(42px)",
-        letterSpacing: "0.55em",
+        filter: "blur(32px)",
+        letterSpacing: "0.45em",
         opacity: 0,
-        scale: 0.94,
+        scale: 0.95,
       },
       {
         filter: "blur(0px)",
         letterSpacing: "0.14em",
         opacity: 1,
         scale: 1,
-        duration: 2.6,
+        duration: 2.0,
         ease: "power3.out",
-        delay: 0.2,
+        delay: 0.1,
       }
     );
 
     if (subtitleRef.current) {
       gsap.fromTo(
         subtitleRef.current,
-        { opacity: 0, y: 15, filter: "blur(8px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.8, ease: "power2.out", delay: 0.9 }
+        { opacity: 0, y: 12, filter: "blur(6px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.4, ease: "power2.out", delay: 0.5 }
       );
     }
   }, []);
 
-  // ─── 3. Progress counter ───────────────────────────────────────────────────
+  // 4. Progress counter
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
-      current += Math.floor(Math.random() * 5) + 3;
+      current += Math.floor(Math.random() * 6) + 4;
       if (current >= 100) {
         current = 100;
         clearInterval(interval);
         setProgress(100);
-        setTimeout(finishIntro, 400);
+        setTimeout(() => {
+          finishIntro();
+        }, 300);
       } else {
         setProgress(current);
       }
-    }, 38);
-    return () => clearInterval(interval);
-  }, []);
+    }, 40);
 
-  const finishIntro = () => {
-    if (isFinished) return;
-    setIsFinished(true);
-    gsap.timeline({
-      onComplete: () => {
-        if (preloaderRef.current) preloaderRef.current.style.display = "none";
-        if (onComplete) onComplete();
-      },
-    })
-      .to(lottieContainerRef.current, { scale: 1.1, opacity: 0, duration: 0.4, ease: "power2.inOut" })
-      .to(titleTextRef.current, { opacity: 0, y: -25, filter: "blur(12px)", duration: 0.45, ease: "power2.in" }, "-=0.35")
-      .to(bottomRef.current, { opacity: 0, duration: 0.3 }, "-=0.3")
-      .to(preloaderRef.current, { yPercent: -100, duration: 0.8, ease: "expo.inOut" }, "-=0.1");
-  };
+    return () => clearInterval(interval);
+  }, [finishIntro]);
 
   return (
     <div
