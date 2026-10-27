@@ -23,16 +23,14 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       return;
     }
 
+    // Curtain slides UP smoothly to reveal the hero section underneath
     gsap.to(preloaderRef.current, {
-      opacity: 0,
-      duration: 0.65,
-      ease: "power2.inOut",
+      yPercent: -100,
+      duration: 0.85,
+      ease: "power4.inOut",
       onComplete: () => {
         if (preloaderRef.current) {
           preloaderRef.current.style.display = "none";
-        }
-        if (typeof window !== "undefined") {
-          sessionStorage.setItem("commerce_agents_intro_seen", "true");
         }
         onCompleteRef.current?.();
       },
@@ -53,42 +51,34 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     const preloader = preloaderRef.current;
     if (!text || !preloader) return;
 
-    // Check if seen before in this tab session
-    const hasSeen =
-      typeof window !== "undefined" &&
-      sessionStorage.getItem("commerce_agents_intro_seen") === "true";
+    // Reset preloader position in case of hot reload
+    gsap.set(preloader, { yPercent: 0, display: "flex" });
 
-    if (hasSeen) {
-      preloader.style.display = "none";
-      onCompleteRef.current?.();
-      return;
-    }
-
-    // Hardware-accelerate the text layer
+    // Ensure initial blurred & spaced state
     gsap.set(text, {
       opacity: 0,
-      filter: "blur(32px)",
+      filter: "blur(35px)",
       letterSpacing: "0.45em",
-      scale: 0.96,
+      scale: 0.95,
       transform: "translateZ(0)",
     });
 
     const tl = gsap.timeline({
-      delay: 0.15,
+      delay: 0.2,
       onComplete: finish,
     });
 
-    // 1. Smoothly unblur, gather letters, and come to 100% sharpness
+    // 1. Smoothly unblur from heavy haze to razor-sharp focus
     tl.to(text, {
       opacity: 1,
       filter: "blur(0px)",
       letterSpacing: "0.14em",
       scale: 1,
-      duration: 1.6,
-      ease: "power2.out",
+      duration: 1.5,
+      ease: "power3.out",
     })
       // 2. Hold sharply in focus for clear visual impact
-      .to({}, { duration: 0.5 });
+      .to({}, { duration: 0.55 });
 
     return () => {
       tl.kill();
@@ -101,7 +91,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       onClick={finish}
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#09080A] cursor-pointer select-none overflow-hidden"
       style={{
-        willChange: "opacity",
+        willChange: "transform",
         transform: "translateZ(0)",
       }}
     >
@@ -115,13 +105,17 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         }}
       />
 
-      {/* Pure Center Wordmark – One Single Line */}
+      {/* Pure Center Wordmark – One Single Line with baked-in initial blur so NO sharp text ever flashes */}
       <h1
         ref={textRef}
         className="font-light text-white uppercase leading-none select-none drop-shadow-[0_15px_45px_rgba(151,128,255,0.3)] max-w-full px-4 text-center"
         style={{
           fontSize: "clamp(22px, 6.5vw, 92px)",
           whiteSpace: "nowrap",
+          opacity: 0,
+          filter: "blur(35px)",
+          letterSpacing: "0.45em",
+          transform: "scale(0.95) translateZ(0)",
           willChange: "filter, opacity, transform, letter-spacing",
         }}
       >
