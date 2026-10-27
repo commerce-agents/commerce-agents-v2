@@ -4,11 +4,11 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 interface PreloaderProps {
-  onGlideStart?: () => void;
+  onReveal?: () => void;
   onComplete?: () => void;
 }
 
-export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) {
+export default function Preloader({ onReveal, onComplete }: PreloaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
@@ -23,25 +23,23 @@ export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) 
     // Prevent background scrolling while preloader is active
     document.body.style.overflow = "hidden";
 
-    // Initial state: Pure black screen, dead-center text heavily blurred with wide letter spacing
+    // Initial state: Pure pitch black screen
     gsap.set(container, { opacity: 1, display: "flex", backgroundColor: "#09080A" });
     gsap.set(text, {
       opacity: 0,
       filter: "blur(32px)",
-      letterSpacing: "0.45em",
-      scale: 0.96,
-      y: 0,
+      letterSpacing: "0.42em",
+      scale: 0.98,
     });
     if (glow) {
-      gsap.set(glow, { opacity: 0, scale: 0.75 });
+      gsap.set(glow, { opacity: 0, scale: 0.8 });
     }
 
     const tl = gsap.timeline({
-      delay: 0.1,
+      delay: 0.15,
     });
 
-    // ── STAGE 1: Center Focus (1.35s) ──────────────────────────────────────────
-    // Text unblurs smoothly in exact vertical & horizontal center of pure black screen
+    // ── STAGE 1: Blurred text to clear vision (1.3s) ──────────────────────────
     tl.to(
       text,
       {
@@ -49,7 +47,7 @@ export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) 
         filter: "blur(0px)",
         letterSpacing: "0.14em",
         scale: 1,
-        duration: 1.35,
+        duration: 1.3,
         ease: "power2.out",
       },
       0
@@ -61,64 +59,57 @@ export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) 
         {
           opacity: 0.45,
           scale: 1,
-          duration: 1.35,
+          duration: 1.3,
           ease: "power2.out",
         },
         0
       );
     }
 
-    // ── STAGE 2: Sharp Hold (0.75s) ────────────────────────────────────────────
-    // Stays perfectly sharp in the center so the brand name cleanly registers
-    tl.to({}, { duration: 0.75 });
+    // ── STAGE 2: Sharp Hold (0.65s) ───────────────────────────────────────────
+    tl.to({}, { duration: 0.65 });
 
-    // ── STAGE 3: Upward Glide & Handoff (1.05s) ────────────────────────────────
-    // Text smoothly glides UPWARDS from center into the hero headline position
-    tl.call(() => {
-      const heroHeading = document.getElementById("hero-heading");
-      let deltaY = -(window.innerHeight * 0.28);
-      if (heroHeading && text) {
-        const heroRect = heroHeading.getBoundingClientRect();
-        const textRect = text.getBoundingClientRect();
-        deltaY = heroRect.top + heroRect.height / 2 - (textRect.top + textRect.height / 2);
+    // ── STAGE 3: Fade Out into Complete Black (0.55s) ─────────────────────────
+    tl.to(
+      text,
+      {
+        opacity: 0,
+        filter: "blur(12px)",
+        duration: 0.55,
+        ease: "power2.in",
       }
+    );
 
-      // Signal page that upward glide has commenced
-      onGlideStart?.();
-
-      // Glide text smoothly to hero coordinates
-      gsap.to(text, {
-        y: deltaY,
-        duration: 1.05,
-        ease: "power3.inOut",
-      });
-
-      // Dissolve the preloader black background so the hero section shines through
-      gsap.to(container, {
-        backgroundColor: "rgba(9, 8, 10, 0)",
-        duration: 0.9,
-        ease: "power2.inOut",
-      });
-
-      // Fade out the organic glow behind text
-      if (glow) {
-        gsap.to(glow, {
-          y: deltaY * 0.6,
+    if (glow) {
+      tl.to(
+        glow,
+        {
           opacity: 0,
-          duration: 0.75,
-          ease: "power2.inOut",
-        });
-      }
+          duration: 0.45,
+          ease: "power2.in",
+        },
+        "<"
+      );
+    }
+
+    // ── STAGE 4: Complete Pitch Black Pause (0.4s) ────────────────────────────
+    tl.to({}, { duration: 0.4 });
+
+    // ── STAGE 5: Black Curtain Dissolves & Content Reveals Smoothly (0.85s) ───
+    tl.call(() => {
+      onReveal?.();
     });
 
-    // Hold for duration of glide
-    tl.to({}, { duration: 1.05 });
+    tl.to(container, {
+      opacity: 0,
+      duration: 0.85,
+      ease: "power2.inOut",
+    });
 
-    // ── STAGE 4: Completion & Clean Handoff ──────────────────────────────────────
+    // ── STAGE 6: Clean Up & Unlock ───────────────────────────────────────────
     tl.call(() => {
       document.body.style.overflow = "";
       onComplete?.();
-      // Cleanly unmount overlay once hero headline has taken over
       setTimeout(() => {
         setIsDone(true);
       }, 50);
@@ -128,7 +119,7 @@ export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) 
       document.body.style.overflow = "";
       tl.kill();
     };
-  }, [onGlideStart, onComplete]);
+  }, [onReveal, onComplete]);
 
   if (isDone) return null;
 
@@ -138,7 +129,7 @@ export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) 
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#09080A] select-none overflow-hidden"
       style={{
         pointerEvents: "none",
-        willChange: "background-color",
+        willChange: "opacity",
       }}
     >
       {/* Soft volumetric organic glow behind centered wordmark */}
@@ -151,7 +142,7 @@ export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) 
           background:
             "radial-gradient(ellipse at center, rgba(151,128,255,0.35) 0%, rgba(115,34,242,0.2) 45%, rgba(255,116,16,0.1) 70%, transparent 80%)",
           filter: "blur(80px)",
-          willChange: "transform, opacity",
+          willChange: "opacity",
         }}
       />
 
@@ -161,11 +152,11 @@ export default function Preloader({ onGlideStart, onComplete }: PreloaderProps) 
         className="relative z-10 font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] max-w-full px-4 text-center"
         style={{
           fontSize: "clamp(20px, 6.2vw, 88px)",
-          letterSpacing: "0.45em",
+          letterSpacing: "0.42em",
           whiteSpace: "nowrap",
           filter: "blur(32px)",
           opacity: 0,
-          willChange: "transform, filter, opacity, letter-spacing",
+          willChange: "filter, opacity, letter-spacing",
         }}
       >
         COMMERCE AGENTS

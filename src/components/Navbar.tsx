@@ -12,8 +12,8 @@ interface NavbarProps {
 export default function Navbar({ isVisible = true }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [chennaiTime, setChennaiTime] = useState("");
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -63,11 +63,11 @@ export default function Navbar({ isVisible = true }: NavbarProps) {
           scrolled ? "bg-[#09080A]/85 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.6)] py-3" : ""
         }`}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="relative max-w-7xl mx-auto flex items-center justify-between">
           {/* Brand Logo with Authentic Geometric Mark */}
           <Link
             href="/"
-            className="group flex items-center gap-3.5 text-sm tracking-wider font-semibold"
+            className="group flex items-center gap-3.5 text-sm tracking-wider font-semibold z-10"
           >
             <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-[#9780FF]/25 via-white/5 to-[#FF7410]/25 p-[1px] border border-white/10 transition-all duration-300 group-hover:scale-105 group-hover:border-[#9780FF]/50 shadow-[0_0_20px_rgba(151,128,255,0.2)] flex items-center justify-center overflow-hidden">
               <Image
@@ -89,10 +89,10 @@ export default function Navbar({ isVisible = true }: NavbarProps) {
             </div>
           </Link>
 
-          {/* Desktop Nav Links with Magnetic Sliding Hover Capsule */}
+          {/* Desktop Nav Links: Locked strictly to DEAD-CENTER of viewport/header */}
           <nav
             onMouseLeave={() => setHoveredIdx(null)}
-            className="hidden lg:flex items-center relative bg-white/[0.03] border border-white/[0.08] p-1 rounded-full backdrop-blur-md"
+            className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 bg-white/[0.03] border border-white/[0.08] p-1 rounded-full backdrop-blur-md z-20 shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
           >
             {navLinks.map((link, idx) => {
               const isHovered = hoveredIdx === idx;
@@ -125,12 +125,12 @@ export default function Navbar({ isVisible = true }: NavbarProps) {
           </nav>
 
           {/* Right Area: Live Time + CTA */}
-          <div className="hidden sm:flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-4 z-10">
             {/* Chennai Time */}
             <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] text-[11px] font-mono text-zinc-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>CHENNAI</span>
-              <span className="text-white font-medium">{chennaiTime || "11:45 PM"}</span>
+              <span className="text-white font-medium">{chennaiTime || "02:30 AM"}</span>
             </div>
 
             {/* Glowing CTA Button */}
@@ -147,7 +147,7 @@ export default function Navbar({ isVisible = true }: NavbarProps) {
           </div>
 
           {/* Mobile Menu Hamburger */}
-          <div className="flex sm:hidden items-center gap-2">
+          <div className="flex sm:hidden items-center gap-2 z-10">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg bg-white/5 border border-white/10 text-white"

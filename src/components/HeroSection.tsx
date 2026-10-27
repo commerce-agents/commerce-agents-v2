@@ -4,11 +4,10 @@ import React, { useEffect, useRef } from "react";
 import { ArrowDown, ArrowUpRight, Zap, Sparkles, Terminal, Activity, Cpu } from "lucide-react";
 
 interface HeroSectionProps {
-  isGliding?: boolean;
-  isReady?: boolean;
+  isRevealed?: boolean;
 }
 
-export default function HeroSection({ isGliding = false, isReady = false }: HeroSectionProps) {
+export default function HeroSection({ isRevealed = true }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoBgRef = useRef<HTMLDivElement>(null);
@@ -21,8 +20,6 @@ export default function HeroSection({ isGliding = false, isReady = false }: Hero
   const blobRef = useRef<HTMLDivElement>(null);
 
   const mousePosRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
-
-  const showSurroundings = isGliding || isReady;
 
   // ─── 1. Interactive White Star Particles Canvas ────────────────────────────
   useEffect(() => {
@@ -161,7 +158,7 @@ export default function HeroSection({ isGliding = false, isReady = false }: Hero
       <div
         ref={videoBgRef}
         className="absolute inset-0 pointer-events-none z-0 overflow-hidden transition-opacity duration-1000"
-        style={{ opacity: showSurroundings ? 1 : 0 }}
+        style={{ opacity: isRevealed ? 1 : 0 }}
       >
         <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-20 scale-105">
           <source src="/video/hero-bg.mp4" type="video/mp4" />
@@ -174,20 +171,20 @@ export default function HeroSection({ isGliding = false, isReady = false }: Hero
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none z-10 transition-opacity duration-1000"
-        style={{ opacity: showSurroundings ? 1 : 0 }}
+        style={{ opacity: isRevealed ? 1 : 0 }}
       />
 
-      {/* ─── HERO CONTENT ──────────────────────────────────────────────────────── */}
-      <div className="relative max-w-7xl mx-auto flex flex-col items-center text-center z-20 w-full">
+      {/* ─── HERO CONTENT: Smoothly revealed in place (NO jumping or moving back) ─── */}
+      <div
+        className="relative max-w-7xl mx-auto flex flex-col items-center text-center z-20 w-full transition-all duration-900 ease-out"
+        style={{
+          opacity: isRevealed ? 1 : 0,
+          transform: isRevealed ? "translateY(0)" : "translateY(18px)",
+          filter: isRevealed ? "blur(0px)" : "blur(12px)",
+        }}
+      >
         {/* Eyebrow Badge */}
-        <div
-          className="relative inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)] max-w-full transition-all duration-700 ease-out"
-          style={{
-            opacity: showSurroundings ? 1 : 0,
-            transform: showSurroundings ? "translateY(0)" : "translateY(24px)",
-            filter: showSurroundings ? "blur(0px)" : "blur(12px)",
-          }}
-        >
+        <div className="relative inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8 shadow-[0_0_20px_rgba(151,128,255,0.1)] max-w-full">
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9780FF] opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9780FF]" />
@@ -199,277 +196,265 @@ export default function HeroSection({ isGliding = false, isReady = false }: Hero
           <span className="font-mono text-[11px] text-[#FF7410] hidden sm:inline">PROTOTYPE TO SCALE</span>
         </div>
 
-        {/* ── HERO HEADLINE: Target landing spot for Preloader glide ── */}
+        {/* ── HERO HEADLINE: Firm, beautiful, stationary in place ── */}
         <h1
-          id="hero-heading"
-          className="relative font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] max-w-full px-4 text-center transition-opacity duration-300"
+          className="relative font-light text-white uppercase leading-none select-none drop-shadow-[0_12px_40px_rgba(151,128,255,0.25)] max-w-full px-4 text-center"
           style={{
             fontSize: "clamp(20px, 6.2vw, 88px)",
             letterSpacing: "0.14em",
             whiteSpace: "nowrap",
-            opacity: isReady ? 1 : 0,
           }}
         >
           COMMERCE AGENTS
         </h1>
 
-        {/* Surrounding Elements Container */}
+        {/* Subtitle */}
+        <p className="font-editorial text-lg sm:text-2xl text-zinc-300 font-light tracking-wide mt-4 sm:mt-5 mb-8 sm:mb-12 max-w-2xl px-2">
+          The 0→1 Product Design &amp; Autonomous Commerce Studio
+        </p>
+
+        {/* ─── 3 CONNECTED 3D STATS CARDS: DESKTOP & TABLET ONLY ─── */}
         <div
-          className="relative flex flex-col items-center w-full transition-all duration-900 ease-out"
-          style={{
-            opacity: showSurroundings ? 1 : 0,
-            transform: showSurroundings ? "translateY(0)" : "translateY(32px)",
-            filter: showSurroundings ? "blur(0px)" : "blur(14px)",
-          }}
+          ref={cardsContainerRef}
+          className="hidden md:flex relative w-full max-w-6xl items-center justify-center my-6"
+          style={{ minHeight: 440 }}
         >
-          {/* Subtitle */}
-          <p className="font-editorial text-lg sm:text-2xl text-zinc-300 font-light tracking-wide mt-4 sm:mt-5 mb-8 sm:mb-12 max-w-2xl px-2">
-            The 0→1 Product Design &amp; Autonomous Commerce Studio
-          </p>
-
-          {/* ─── 3 CONNECTED 3D STATS CARDS: DESKTOP & TABLET ONLY ─── */}
+          {/* Volumetric Organic Iridescent Glow behind cards */}
           <div
-            ref={cardsContainerRef}
-            className="hidden md:flex relative w-full max-w-6xl items-center justify-center my-6"
-            style={{ minHeight: 440 }}
+            ref={blobRef}
+            className="pointer-events-none transition-transform duration-100 ease-out absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              width: 720,
+              height: 480,
+              borderRadius: "50%",
+              background:
+                "radial-gradient(ellipse at center, rgba(151,128,255,0.55) 0%, rgba(115,34,242,0.35) 45%, rgba(255,116,16,0.18) 70%, transparent 80%)",
+              filter: "blur(90px)",
+              willChange: "transform",
+            }}
+          />
+
+          {/* SVG Glowing Neon Circuit Lines connecting Center Card to Left and Right */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none z-15 hidden lg:block"
+            viewBox="0 0 1150 440"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Volumetric Organic Iridescent Glow behind cards */}
-            <div
-              ref={blobRef}
-              className="pointer-events-none transition-transform duration-100 ease-out absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-              style={{
-                width: 720,
-                height: 480,
-                borderRadius: "50%",
-                background:
-                  "radial-gradient(ellipse at center, rgba(151,128,255,0.55) 0%, rgba(115,34,242,0.35) 45%, rgba(255,116,16,0.18) 70%, transparent 80%)",
-                filter: "blur(90px)",
-                willChange: "transform",
-              }}
+            <defs>
+              <filter id="neonPurple" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="neonCyan" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <linearGradient id="leftNeonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#9780FF" stopOpacity="0.8" />
+                <stop offset="50%" stopColor="#00F0FF" stopOpacity="1" />
+                <stop offset="100%" stopColor="#9780FF" stopOpacity="0.8" />
+              </linearGradient>
+              <linearGradient id="rightNeonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.8" />
+                <stop offset="50%" stopColor="#FF7410" stopOpacity="1" />
+                <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.8" />
+              </linearGradient>
+            </defs>
+
+            {/* Left Conduit (From Left Card to Center Card) */}
+            <path
+              d="M 330 220 L 370 220 L 400 190 L 430 190"
+              stroke="url(#leftNeonGrad)"
+              strokeWidth="2"
+              strokeDasharray="6 4"
+              filter="url(#neonPurple)"
+              className="animate-pulse"
             />
+            <circle cx="330" cy="220" r="4.5" fill="#9780FF" filter="url(#neonPurple)" />
+            <circle cx="430" cy="190" r="4.5" fill="#00F0FF" filter="url(#neonPurple)" />
 
-            {/* SVG Glowing Neon Circuit Lines connecting Center Card to Left and Right */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-15 hidden lg:block"
-              viewBox="0 0 1150 440"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <filter id="neonPurple" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3.5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                <filter id="neonCyan" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3.5" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                <linearGradient id="leftNeonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#9780FF" stopOpacity="0.8" />
-                  <stop offset="50%" stopColor="#00F0FF" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#9780FF" stopOpacity="0.8" />
-                </linearGradient>
-                <linearGradient id="rightNeonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.8" />
-                  <stop offset="50%" stopColor="#FF7410" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.8" />
-                </linearGradient>
-              </defs>
+            {/* Right Conduit (From Center Card to Right Card) */}
+            <path
+              d="M 720 190 L 750 190 L 780 220 L 820 220"
+              stroke="url(#rightNeonGrad)"
+              strokeWidth="2"
+              strokeDasharray="6 4"
+              filter="url(#neonCyan)"
+              className="animate-pulse"
+            />
+            <circle cx="720" cy="190" r="4.5" fill="#00F0FF" filter="url(#neonCyan)" />
+            <circle cx="820" cy="220" r="4.5" fill="#FF7410" filter="url(#neonCyan)" />
+          </svg>
 
-              {/* Left Conduit (From Left Card to Center Card) */}
-              <path
-                d="M 330 220 L 370 220 L 400 190 L 430 190"
-                stroke="url(#leftNeonGrad)"
-                strokeWidth="2"
-                strokeDasharray="6 4"
-                filter="url(#neonPurple)"
-                className="animate-pulse"
-              />
-              <circle cx="330" cy="220" r="4.5" fill="#9780FF" filter="url(#neonPurple)" />
-              <circle cx="430" cy="190" r="4.5" fill="#00F0FF" filter="url(#neonPurple)" />
-
-              {/* Right Conduit (From Center Card to Right Card) */}
-              <path
-                d="M 720 190 L 750 190 L 780 220 L 820 220"
-                stroke="url(#rightNeonGrad)"
-                strokeWidth="2"
-                strokeDasharray="6 4"
-                filter="url(#neonCyan)"
-                className="animate-pulse"
-              />
-              <circle cx="720" cy="190" r="4.5" fill="#00F0FF" filter="url(#neonCyan)" />
-              <circle cx="820" cy="220" r="4.5" fill="#FF7410" filter="url(#neonCyan)" />
-            </svg>
-
-            {/* ── CARD 1: Left Card – WE TWO PETS D2C STATS ───────── */}
-            <div
-              ref={leftCardRef}
-              style={{ willChange: "transform", zIndex: 12 }}
-              className="hidden lg:block w-72 shrink-0 p-1 rounded-[28px] bg-gradient-to-b from-white/15 via-white/5 to-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_40px_rgba(151,128,255,0.2)] backdrop-blur-xl border border-white/15 transition-all duration-300 hover:border-[#9780FF]/50"
-            >
-              <div className="rounded-[24px] bg-[#0C0B10]/95 p-4 text-left border border-white/5 space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#9780FF] animate-pulse" />
-                    <span className="font-mono text-[10px] text-zinc-300 uppercase tracking-wider">
-                      WE TWO PETS D2C
-                    </span>
-                  </div>
-                  <span className="font-mono text-[9px] text-[#9780FF] bg-[#9780FF]/10 px-2 py-0.5 rounded-full border border-[#9780FF]/20">
-                    NODE #02
+          {/* ── CARD 1: Left Card – WE TWO PETS D2C STATS ───────── */}
+          <div
+            ref={leftCardRef}
+            style={{ willChange: "transform", zIndex: 12 }}
+            className="hidden lg:block w-72 shrink-0 p-1 rounded-[28px] bg-gradient-to-b from-white/15 via-white/5 to-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_40px_rgba(151,128,255,0.2)] backdrop-blur-xl border border-white/15 transition-all duration-300 hover:border-[#9780FF]/50"
+          >
+            <div className="rounded-[24px] bg-[#0C0B10]/95 p-4 text-left border border-white/5 space-y-3">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#9780FF] animate-pulse" />
+                  <span className="font-mono text-[10px] text-zinc-300 uppercase tracking-wider">
+                    WE TWO PETS D2C
                   </span>
                 </div>
+                <span className="font-mono text-[9px] text-[#9780FF] bg-[#9780FF]/10 px-2 py-0.5 rounded-full border border-[#9780FF]/20">
+                  NODE #02
+                </span>
+              </div>
 
-                <div className="space-y-2 text-[11px] font-mono">
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
-                    <div className="text-[10px] text-zinc-500 uppercase">RECURRING REVENUE</div>
-                    <div className="text-sm font-semibold text-white mt-0.5">+142% MoM</div>
-                    <div className="text-[9px] text-emerald-400 mt-0.5">● Auto-subscription cart</div>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
-                    <div className="text-[10px] text-zinc-500 uppercase">CHECKOUT LATENCY</div>
-                    <div className="text-sm font-semibold text-[#00F0FF] mt-0.5">88ms Fast Path</div>
-                    <div className="text-[9px] text-zinc-400 mt-0.5">Zero-bounce funnel</div>
-                  </div>
+              <div className="space-y-2 text-[11px] font-mono">
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="text-[10px] text-zinc-500 uppercase">RECURRING REVENUE</div>
+                  <div className="text-sm font-semibold text-white mt-0.5">+142% MoM</div>
+                  <div className="text-[9px] text-emerald-400 mt-0.5">● Auto-subscription cart</div>
                 </div>
 
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                  <span className="flex items-center gap-1 text-[#9780FF]">
-                    <Activity className="w-3 h-3" /> STREAM LIVE
-                  </span>
-                  <span>SYNC: 100%</span>
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="text-[10px] text-zinc-500 uppercase">CHECKOUT LATENCY</div>
+                  <div className="text-sm font-semibold text-[#00F0FF] mt-0.5">88ms Fast Path</div>
+                  <div className="text-[9px] text-zinc-400 mt-0.5">Zero-bounce funnel</div>
                 </div>
               </div>
+
+              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                <span className="flex items-center gap-1 text-[#9780FF]">
+                  <Activity className="w-3 h-3" /> STREAM LIVE
+                </span>
+                <span>SYNC: 100%</span>
+              </div>
             </div>
+          </div>
 
-            {/* ── CARD 2: Center Card – COMMERCE ENGINE TERMINAL ───── */}
-            <div
-              ref={centerCardRef}
-              style={{ willChange: "transform", zIndex: 20 }}
-              className="w-full max-w-sm sm:max-w-md p-1.5 rounded-[36px] bg-gradient-to-b from-white/20 via-white/5 to-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_60px_rgba(151,128,255,0.35)] backdrop-blur-2xl border border-white/20 mx-2 lg:mx-6"
-            >
-              <div className="rounded-[30px] bg-[#0E0D12]/95 backdrop-blur-2xl overflow-hidden border border-white/10 p-5 text-left">
-                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-mono text-[11px] text-zinc-300 uppercase tracking-wider">
-                      COMMERCE ENGINE LIVE
-                    </span>
-                  </div>
-                  <div className="font-mono text-[10px] text-zinc-500">LATENCY: 12ms</div>
+          {/* ── CARD 2: Center Card – COMMERCE ENGINE TERMINAL ───── */}
+          <div
+            ref={centerCardRef}
+            style={{ willChange: "transform", zIndex: 20 }}
+            className="w-full max-w-sm sm:max-w-md p-1.5 rounded-[36px] bg-gradient-to-b from-white/20 via-white/5 to-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_60px_rgba(151,128,255,0.35)] backdrop-blur-2xl border border-white/20 mx-2 lg:mx-6"
+          >
+            <div className="rounded-[30px] bg-[#0E0D12]/95 backdrop-blur-2xl overflow-hidden border border-white/10 p-5 text-left">
+              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="font-mono text-[11px] text-zinc-300 uppercase tracking-wider">
+                    COMMERCE ENGINE LIVE
+                  </span>
                 </div>
+                <div className="font-mono text-[10px] text-zinc-500">LATENCY: 12ms</div>
+              </div>
 
-                <div className="space-y-3">
-                  {[
-                    { icon: Zap, label: "We Two Pets Engine", sub: "0→1 Subscription & Cart", color: "#9780FF", badge: "+100% Bespoke" },
-                    { icon: Sparkles, label: "Vidya's Kitchen PWA", sub: "WhatsApp Dispatch Board", color: "#FF7410", badge: "Sub-second Sync" },
-                    { icon: Terminal, label: "iRasus EV Telemetry", sub: "3-Tier Battery Triage", color: "#00F0FF", badge: "CAN Stream" },
-                  ].map(({ icon: Icon, label, sub, color, badge }) => (
-                    <div key={label} className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] border border-white/5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${color}22`, color }}>
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-medium text-white">{label}</div>
-                          <div className="text-[10px] text-zinc-400 font-mono">{sub}</div>
-                        </div>
+              <div className="space-y-3">
+                {[
+                  { icon: Zap, label: "We Two Pets Engine", sub: "0→1 Subscription & Cart", color: "#9780FF", badge: "+100% Bespoke" },
+                  { icon: Sparkles, label: "Vidya's Kitchen PWA", sub: "WhatsApp Dispatch Board", color: "#FF7410", badge: "Sub-second Sync" },
+                  { icon: Terminal, label: "iRasus EV Telemetry", sub: "3-Tier Battery Triage", color: "#00F0FF", badge: "CAN Stream" },
+                ].map(({ icon: Icon, label, sub, color, badge }) => (
+                  <div key={label} className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.04] border border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${color}22`, color }}>
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-zinc-300 border border-white/5">
-                        {badge}
-                      </span>
+                      <div>
+                        <div className="text-xs font-medium text-white">{label}</div>
+                        <div className="text-[10px] text-zinc-400 font-mono">{sub}</div>
+                      </div>
                     </div>
-                  ))}
-                </div>
-
-                <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-zinc-400">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#9780FF]" />
-                    AUTONOMOUS DISPATCH
-                  </span>
-                  <span className="text-zinc-500">NODE #01</span>
-                </div>
-              </div>
-            </div>
-
-            {/* ── CARD 3: Right Card – IRASUS EV TELEMETRY STATS ───── */}
-            <div
-              ref={rightCardRef}
-              style={{ willChange: "transform", zIndex: 12 }}
-              className="hidden lg:block w-72 shrink-0 p-1 rounded-[28px] bg-gradient-to-b from-white/15 via-white/5 to-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_40px_rgba(0,240,255,0.2)] backdrop-blur-xl border border-white/15 transition-all duration-300 hover:border-[#00F0FF]/50"
-            >
-              <div className="rounded-[24px] bg-[#0C0B10]/95 p-4 text-left border border-white/5 space-y-3">
-                <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
-                    <span className="font-mono text-[10px] text-zinc-300 uppercase tracking-wider">
-                      IRASUS IOT CLOUD
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-zinc-300 border border-white/5">
+                      {badge}
                     </span>
                   </div>
-                  <span className="font-mono text-[9px] text-[#00F0FF] bg-[#00F0FF]/10 px-2 py-0.5 rounded-full border border-[#00F0FF]/20">
-                    NODE #03
-                  </span>
-                </div>
+                ))}
+              </div>
 
-                <div className="space-y-2 text-[11px] font-mono">
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
-                    <div className="text-[10px] text-zinc-500 uppercase">CAN BUS STREAM</div>
-                    <div className="text-sm font-semibold text-white mt-0.5">10,000 pkt/sec</div>
-                    <div className="text-[9px] text-cyan-400 mt-0.5">● Sub-second telemetry</div>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
-                    <div className="text-[10px] text-zinc-500 uppercase">THERMAL RUNAWAY TRIAGE</div>
-                    <div className="text-sm font-semibold text-[#FF7410] mt-0.5">0.00s Zero Delay</div>
-                    <div className="text-[9px] text-zinc-400 mt-0.5">Neural pack monitoring</div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                  <span className="flex items-center gap-1 text-[#00F0FF]">
-                    <Cpu className="w-3 h-3" /> CAN ONLINE
-                  </span>
-                  <span>PACKS: 1,420+</span>
-                </div>
+              <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#9780FF]" />
+                  AUTONOMOUS DISPATCH
+                </span>
+                <span className="text-zinc-500">NODE #01</span>
               </div>
             </div>
           </div>
 
-          {/* CTA Actions */}
-          <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 mt-4 sm:mt-6 w-full sm:w-auto px-4 sm:px-0">
-            <a
-              href="#contact"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#9780FF] via-[#a892ff] to-[#FF7410] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_30px_rgba(151,128,255,0.4)] hover:scale-105 flex items-center justify-center gap-2"
-            >
-              <span>COMMISSION SPRINT</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </a>
-            <a
-              href="#work"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/10 font-semibold text-xs tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <span>EXPLORE WORK</span>
-              <ArrowDown className="w-4 h-4" />
-            </a>
-          </div>
+          {/* ── CARD 3: Right Card – IRASUS EV TELEMETRY STATS ───── */}
+          <div
+            ref={rightCardRef}
+            style={{ willChange: "transform", zIndex: 12 }}
+            className="hidden lg:block w-72 shrink-0 p-1 rounded-[28px] bg-gradient-to-b from-white/15 via-white/5 to-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_40px_rgba(0,240,255,0.2)] backdrop-blur-xl border border-white/15 transition-all duration-300 hover:border-[#00F0FF]/50"
+          >
+            <div className="rounded-[24px] bg-[#0C0B10]/95 p-4 text-left border border-white/5 space-y-3">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
+                  <span className="font-mono text-[10px] text-zinc-300 uppercase tracking-wider">
+                    IRASUS IOT CLOUD
+                  </span>
+                </div>
+                <span className="font-mono text-[9px] text-[#00F0FF] bg-[#00F0FF]/10 px-2 py-0.5 rounded-full border border-[#00F0FF]/20">
+                  NODE #03
+                </span>
+              </div>
 
-          {/* Micro Status Footnote */}
-          <div className="mt-8 sm:mt-10 flex items-center gap-3 text-[11px] font-mono text-zinc-400">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-            </span>
-            <span>2 SLOTS AVAILABLE FOR Q2 2026</span>
-            <span className="text-zinc-600">/</span>
-            <span className="text-zinc-400">AVG SPRINT: 4-6 WEEKS</span>
+              <div className="space-y-2 text-[11px] font-mono">
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="text-[10px] text-zinc-500 uppercase">CAN BUS STREAM</div>
+                  <div className="text-sm font-semibold text-white mt-0.5">10,000 pkt/sec</div>
+                  <div className="text-[9px] text-cyan-400 mt-0.5">● Sub-second telemetry</div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                  <div className="text-[10px] text-zinc-500 uppercase">THERMAL RUNAWAY TRIAGE</div>
+                  <div className="text-sm font-semibold text-[#FF7410] mt-0.5">0.00s Zero Delay</div>
+                  <div className="text-[9px] text-zinc-400 mt-0.5">Neural pack monitoring</div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                <span className="flex items-center gap-1 text-[#00F0FF]">
+                  <Cpu className="w-3 h-3" /> CAN ONLINE
+                </span>
+                <span>PACKS: 1,420+</span>
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* CTA Actions */}
+        <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 mt-4 sm:mt-6 w-full sm:w-auto px-4 sm:px-0">
+          <a
+            href="#contact"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#9780FF] via-[#a892ff] to-[#FF7410] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_30px_rgba(151,128,255,0.4)] hover:scale-105 flex items-center justify-center gap-2"
+          >
+            <span>COMMISSION SPRINT</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </a>
+          <a
+            href="#work"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/10 font-semibold text-xs tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <span>EXPLORE WORK</span>
+            <ArrowDown className="w-4 h-4" />
+          </a>
+        </div>
+
+        {/* Micro Status Footnote */}
+        <div className="mt-8 sm:mt-10 flex items-center gap-3 text-[11px] font-mono text-zinc-400">
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+          </span>
+          <span>2 SLOTS AVAILABLE FOR Q2 2026</span>
+          <span className="text-zinc-600">/</span>
+          <span className="text-zinc-400">AVG SPRINT: 4-6 WEEKS</span>
         </div>
       </div>
     </section>
