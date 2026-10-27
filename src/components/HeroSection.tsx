@@ -25,16 +25,11 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
 
   const mousePosRef = useRef({ targetX: 0, targetY: 0, currentX: 0, currentY: 0 });
 
-  // Guard ref so intro animation strictly runs ONCE and never repeats
-  const hasRunIntroRef = useRef(false);
   const onIntroCompleteRef = useRef(onIntroComplete);
   onIntroCompleteRef.current = onIntroComplete;
 
   // ─── 1. Cinematic Intro: Center Blur-to-Clear → Move Up → Reveal Contents ──
   useEffect(() => {
-    if (hasRunIntroRef.current) return;
-    hasRunIntroRef.current = true;
-
     const title = titleRef.current;
     const surrounding = surroundingRef.current;
     const eyebrow = eyebrowRef.current;
@@ -50,59 +45,62 @@ export default function HeroSection({ onIntroComplete }: HeroSectionProps) {
     const titleCenterY = rect.top + rect.height / 2;
     const deltaY = viewportCenterY - titleCenterY;
 
-    // Initial state: Only the title exists on screen at dead center, blurred and wide
-    gsap.set(title, {
-      y: deltaY,
-      filter: "blur(38px)",
-      opacity: 0,
-      scale: 0.94,
-      letterSpacing: "0.35em",
-    });
+    // Use gsap.context for React StrictMode compatibility
+    const ctx = gsap.context(() => {
+      // Initial state: Only the title exists on screen at dead center, blurred and wide
+      gsap.set(title, {
+        y: deltaY,
+        filter: "blur(38px)",
+        opacity: 0,
+        scale: 0.94,
+        letterSpacing: "0.35em",
+      });
 
-    // Everything else is completely invisible
-    if (eyebrow) gsap.set(eyebrow, { opacity: 0, y: -16 });
-    gsap.set(surrounding, { opacity: 0, y: 25 });
-    if (videoBg) gsap.set(videoBg, { opacity: 0 });
-    if (canvas) gsap.set(canvas, { opacity: 0 });
+      // Everything else is completely invisible
+      if (eyebrow) gsap.set(eyebrow, { opacity: 0, y: -16 });
+      gsap.set(surrounding, { opacity: 0, y: 25 });
+      if (videoBg) gsap.set(videoBg, { opacity: 0 });
+      if (canvas) gsap.set(canvas, { opacity: 0 });
 
-    const tl = gsap.timeline();
+      const tl = gsap.timeline();
 
-    // 1. COMMERCE AGENTS unblurs to crystal clear vision in the center
-    tl.to(title, {
-      opacity: 1,
-      filter: "blur(0px)",
-      scale: 1,
-      letterSpacing: "0.14em",
-      duration: 1.45,
-      ease: "power3.out",
-      delay: 0.25,
-    })
-      // 2. Hold sharply in center for impact
-      .to({}, { duration: 0.35 })
-      // 3. Move smoothly up into Hero headline spot
-      .to(title, {
-        y: 0,
-        duration: 1.15,
-        ease: "power3.inOut",
+      // 1. COMMERCE AGENTS unblurs to crystal clear vision in the center
+      tl.to(title, {
+        opacity: 1,
+        filter: "blur(0px)",
+        scale: 1,
+        letterSpacing: "0.14em",
+        duration: 1.45,
+        ease: "power3.out",
+        delay: 0.2,
       })
-      // 4. Reveal surrounding Hero elements (stars, glow, eyebrow, subtitle, cards, CTAs)
-      .to(
-        [videoBg, canvas, eyebrow, surrounding],
-        {
-          opacity: 1,
+        // 2. Hold sharply in center for impact
+        .to({}, { duration: 0.35 })
+        // 3. Move smoothly up into Hero headline spot
+        .to(title, {
           y: 0,
-          duration: 0.9,
-          stagger: 0.08,
-          ease: "power2.out",
-          onComplete: () => {
-            onIntroCompleteRef.current?.();
+          duration: 1.15,
+          ease: "power3.inOut",
+        })
+        // 4. Reveal surrounding Hero elements (stars, glow, eyebrow, subtitle, cards, CTAs)
+        .to(
+          [videoBg, canvas, eyebrow, surrounding],
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.9,
+            stagger: 0.08,
+            ease: "power2.out",
+            onComplete: () => {
+              onIntroCompleteRef.current?.();
+            },
           },
-        },
-        "-=0.6"
-      );
+          "-=0.6"
+        );
+    }, containerRef);
 
     return () => {
-      tl.kill();
+      ctx.revert();
     };
   }, []);
 
