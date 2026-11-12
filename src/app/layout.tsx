@@ -216,7 +216,7 @@ const structuredData = {
       "@type": "Person",
       "@id": "https://www.commerce-agents.design/#founder",
       "name": "Santhosh A",
-      "jobTitle": "Co-Founder & Lead Product Design Engineer",
+      "jobTitle": "Product Design Development Engineer",
       "url": "https://designbysanthosh.com",
       "image": "https://www.commerce-agents.design/cofounder/santhosh.jpg",
       "sameAs": [

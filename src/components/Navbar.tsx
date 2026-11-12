@@ -46,7 +46,6 @@ export default function Navbar({ isVisible = true }: NavbarProps) {
     { label: "AI AGENTS", href: "#ai-agents", index: "01" },
     { label: "WORK", href: "#work", index: "02" },
     { label: "CAPABILITIES", href: "#capabilities", index: "03" },
-    { label: "CO-FOUNDER", href: "#cofounder", index: "04" },
   ];
 
   return (

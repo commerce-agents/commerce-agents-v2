@@ -9,7 +9,6 @@ import ScrollRevealManifesto from "@/components/ScrollRevealManifesto";
 import AiAgentsSection from "@/components/AiAgentsSection";
 import ClientConstellation from "@/components/ClientConstellation";
 import CapabilitiesSection from "@/components/CapabilitiesSection";
-import CoFounderDossier from "@/components/CoFounderDossier";
 import StudioCoordinates from "@/components/StudioCoordinates";
 import Footer from "@/components/Footer";
 
@@ -31,7 +30,6 @@ export default function Home() {
           <AiAgentsSection />
           <ClientConstellation />
           <CapabilitiesSection />
-          <CoFounderDossier />
           <StudioCoordinates />
           <Footer />
         </main>
